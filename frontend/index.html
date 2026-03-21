@@ -25,7 +25,12 @@
               800: '#3730a3',
               900: '#312e81',
               950: '#1e1b4b',
-            }
+            },
+            'bg-main': 'var(--bg-main)',
+            'text-main': 'var(--text-main)',
+            'text-muted': 'var(--text-muted)',
+            'surface-panel': 'var(--surface-panel)',
+            'surface-card': 'var(--surface-card)',
           },
           animation: {
             'fade-in': 'fade-in 0.5s ease-out forwards',
@@ -177,12 +182,12 @@
       animation: fade-in 0.5s ease-out forwards;
     }
   </style>
-  <link rel="stylesheet" href="/styles/global.css">
+  <link rel="stylesheet" href="/src/styles/global.css">
 </head>
 
-<body class="bg-slate-50 text-slate-900 h-full w-full">
+<body class="bg-bg-main text-text-main h-full w-full">
   <div id="root" class="h-full w-full"></div>
-  <script type="module" src="/index.tsx"></script>
+  <script type="module" src="/src/index.tsx"></script>
 </body>
 
 </html>

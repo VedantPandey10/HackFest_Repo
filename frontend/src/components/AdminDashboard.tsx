@@ -32,7 +32,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
     const [searchTerm, setSearchTerm] = useState('');
 
     useEffect(() => {
-        setSessions(StorageService.getSessions());
+        const fetchData = async () => {
+            const data = await StorageService.getSessionsApi();
+            setSessions(data);
+        };
+        fetchData();
         setJobs(StorageService.getJobs());
     }, []);
 
@@ -183,33 +187,35 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
     );
 
     return (
-        <div className="h-screen w-screen flex bg-slate-50 dark:bg-slate-950 overflow-hidden font-sans text-slate-900 dark:text-slate-100 transition-colors duration-300">
+        <div className="h-full w-full flex bg-bg-main overflow-hidden font-sans text-text-main transition-colors duration-300">
             {/* Sidebar */}
-            <aside className="w-64 bg-slate-900 dark:bg-slate-950 text-slate-300 flex flex-col shrink-0 border-r border-slate-800 transition-colors">
-                <div className="p-6 flex items-center gap-3 text-white border-b border-slate-800">
-                    <Shield className="text-indigo-500" size={28} />
+            <aside className="w-72 bg-bg-main flex flex-col shrink-0 border-r border-slate-200 dark:border-white/5 transition-colors z-50">
+                <div className="h-20 px-8 flex items-center gap-4 border-b border-slate-200 dark:border-white/5 bg-slate-100 dark:bg-white/5">
+                    <div className="w-10 h-10 rounded-xl bg-indigo-500/20 flex items-center justify-center text-indigo-400">
+                        <Shield size={24} />
+                    </div>
                     <div>
-                        <h1 className="font-bold text-lg tracking-tight">Reicrew AI</h1>
-                        <p className="text-xs text-slate-500">Admin Portal</p>
+                        <h1 className="font-black text-xl tracking-tighter shimmer-text">Reincrew AI</h1>
+                        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Admin Portal</p>
                     </div>
                 </div>
 
-                <nav className="flex-1 p-4 space-y-2">
+                <nav className="flex-1 p-6 space-y-3">
                     <button onClick={() => { setActiveTab('candidates'); setSelectedSession(null); }}
-                        className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${activeTab === 'candidates' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20' : 'hover:bg-slate-800 dark:hover:bg-slate-900 text-slate-400 hover:text-white'}`}>
-                        <Users size={20} /> <span className="font-semibold">Candidates</span>
+                        className={`w-full flex items-center gap-4 px-5 py-4 rounded-2xl transition-all ${activeTab === 'candidates' ? 'bg-indigo-600 text-white shadow-xl shadow-indigo-500/20' : 'hover:bg-slate-100 dark:hover:bg-white/5 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'}`}>
+                        <Users size={20} /> <span className="font-bold tracking-tight">Candidate Analytics</span>
                     </button>
                     <button onClick={() => { setActiveTab('jobs'); setSelectedJob(null); setEditingJob(null); }}
-                        className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${activeTab === 'jobs' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20' : 'hover:bg-slate-800 dark:hover:bg-slate-900 text-slate-400 hover:text-white'}`}>
-                        <Briefcase size={20} /> <span className="font-semibold">Roles & Config</span>
+                        className={`w-full flex items-center gap-4 px-5 py-4 rounded-2xl transition-all ${activeTab === 'jobs' ? 'bg-indigo-600 text-white shadow-xl shadow-indigo-500/20' : 'hover:bg-slate-100 dark:hover:bg-white/5 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'}`}>
+                        <Briefcase size={20} /> <span className="font-bold tracking-tight">Role Architect</span>
                     </button>
                     <button onClick={() => { setActiveTab('config'); }}
-                        className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${activeTab === 'config' ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/20' : 'hover:bg-slate-800 dark:hover:bg-slate-900 text-slate-400 hover:text-white'}`}>
-                        <Settings size={20} /> <span className="font-semibold">System Config</span>
+                        className={`w-full flex items-center gap-4 px-5 py-4 rounded-2xl transition-all ${activeTab === 'config' ? 'bg-indigo-600 text-white shadow-xl shadow-indigo-500/20' : 'hover:bg-slate-100 dark:hover:bg-white/5 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'}`}>
+                        <Settings size={20} /> <span className="font-bold tracking-tight">Neural Config</span>
                     </button>
                 </nav>
 
-                <div className="p-4 border-t border-slate-800 space-y-2">
+                <div className="p-6 border-t border-slate-200 dark:border-white/5 space-y-3 bg-slate-100 dark:bg-white/5">
                     <button
                         onClick={() => {
                             if (confirm("DANGER: This will permanently delete ALL candidate data, sessions, and custom job configurations. This cannot be undone. Proceed?")) {
@@ -217,11 +223,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
                                 window.location.reload();
                             }
                         }}
-                        className="w-full flex items-center gap-3 px-4 py-3 text-red-400 hover:bg-red-950/30 rounded-lg transition-colors text-xs font-bold"
+                        className="w-full flex items-center gap-3 px-5 py-3 text-rose-500 dark:text-rose-400/60 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-500/10 rounded-xl transition-all text-[10px] font-black uppercase tracking-widest"
                     >
-                        <Trash2 size={16} /> Wipe All Data
+                        <Trash2 size={16} /> Purge All Nodes
                     </button>
-                    <button onClick={onLogout} className="w-full flex items-center gap-3 px-4 py-3 text-slate-400 hover:bg-slate-800 rounded-lg transition-colors">
+                    <button onClick={onLogout} className="w-full flex items-center gap-4 px-5 py-3 text-slate-500 dark:text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-white/5 rounded-xl transition-all font-bold">
                         <LogOut size={20} /> Exit Portal
                     </button>
                 </div>
@@ -229,19 +235,19 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
 
             {/* Main Content */}
             <main className="flex-1 flex flex-col overflow-hidden relative">
-                <header className="h-16 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-8 flex items-center justify-between shrink-0 transition-colors">
-                    <h2 className="text-xl font-bold text-slate-800 dark:text-white">
-                        {activeTab === 'candidates' && (selectedSession ? `Candidate: ${selectedSession.candidate.name}` : 'Session History')}
-                        {activeTab === 'jobs' && (editingJob ? `Editing: ${editingJob.title}` : 'Role Management')}
-                        {activeTab === 'config' && 'Global System Configuration'}
+                <header className="h-20 bg-bg-main/50 backdrop-blur-xl border-b border-slate-200 dark:border-white/5 px-10 flex items-center justify-between shrink-0 transition-colors z-40">
+                    <h2 className="text-2xl font-black text-slate-900 dark:text-white tracking-tighter">
+                        {activeTab === 'candidates' && (selectedSession ? `Report: ${selectedSession.candidate.name}` : 'Node Activity')}
+                        {activeTab === 'jobs' && (editingJob ? `Design: ${editingJob.title}` : 'Role Management')}
+                        {activeTab === 'config' && 'Global Parameters'}
                     </h2>
 
                     {/* Back Buttons */}
                     {selectedSession && activeTab === 'candidates' && (
-                        <button onClick={() => setSelectedSession(null)} className="text-sm text-indigo-600 font-bold hover:underline">← Back to List</button>
+                        <button onClick={() => setSelectedSession(null)} className="glass-card px-4 py-2 rounded-xl text-xs font-black text-indigo-400 uppercase tracking-widest hover:text-white transition-all">← Back to Analytics</button>
                     )}
                     {selectedJob && !editingJob && activeTab === 'jobs' && (
-                        <button onClick={() => setSelectedJob(null)} className="text-sm text-indigo-600 font-bold hover:underline">← Back to Roles</button>
+                        <button onClick={() => setSelectedJob(null)} className="glass-card px-4 py-2 rounded-xl text-xs font-black text-indigo-400 uppercase tracking-widest hover:text-white transition-all">← Back to Roles</button>
                     )}
                 </header>
 

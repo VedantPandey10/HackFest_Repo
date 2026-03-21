@@ -242,8 +242,8 @@ export const InterviewScreen: React.FC<InterviewScreenProps> = ({ candidate, onC
     <div className="h-full w-full max-w-[1920px] mx-auto flex flex-col p-4 md:p-6 gap-6 relative overflow-hidden transition-colors duration-300">
 
       {/* Dynamic background elements */}
-      <div className="absolute top-[-10%] right-[-5%] w-[40%] h-[40%] bg-brand-500/5 blur-[120px] rounded-full animate-pulse-slow pointer-events-none"></div>
-      <div className="absolute bottom-[-10%] left-[-5%] w-[40%] h-[40%] bg-indigo-500/5 blur-[120px] rounded-full animate-pulse-slow font-delay-700 pointer-events-none"></div>
+      <div className="absolute top-[-10%] right-[-5%] w-[40%] h-[40%] bg-indigo-500/5 blur-[120px] rounded-full animate-pulse-slow pointer-events-none"></div>
+      <div className="absolute bottom-[-10%] left-[-5%] w-[40%] h-[40%] bg-violet-500/5 blur-[120px] rounded-full animate-pulse-slow font-delay-700 pointer-events-none"></div>
 
       {/* ── Violation Overlay ────────────────────────────────── */}
       {showViolationOverlay && (

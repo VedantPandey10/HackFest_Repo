@@ -127,10 +127,33 @@ export const StorageService = {
     return stored ? JSON.parse(stored) : [];
   },
 
-  saveSession: (session: InterviewSession) => {
-    const sessions = StorageService.getSessions();
-    const updated = [session, ...sessions];
-    localStorage.setItem(SESSIONS_KEY, JSON.stringify(updated));
+  saveSession: async (session: InterviewSession) => {
+    try {
+      const resp = await fetch('/api/analytics/sessions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(session)
+      });
+      if (!resp.ok) throw new Error("Failed to save session to backend");
+      return await resp.json();
+    } catch (e) {
+      console.warn("Backend save failed, falling back to local storage", e);
+      const sessions = StorageService.getSessions();
+      const updated = [session, ...sessions];
+      localStorage.setItem(SESSIONS_KEY, JSON.stringify(updated));
+    }
+  },
+
+  getSessionsApi: async (candidateId?: number): Promise<InterviewSession[]> => {
+    try {
+      const url = candidateId ? `/api/analytics/sessions?candidateId=${candidateId}` : '/api/analytics/sessions';
+      const resp = await fetch(url);
+      if (!resp.ok) throw new Error("Failed to fetch sessions");
+      return await resp.json();
+    } catch (e) {
+      console.error("API fetch failed", e);
+      return StorageService.getSessions();
+    }
   },
 
   getConfig: (): AdminConfig => {

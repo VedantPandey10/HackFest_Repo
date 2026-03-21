@@ -232,8 +232,8 @@ export const SummaryScreen: React.FC<SummaryScreenProps> = ({ candidate, results
     return (
         <div className="h-full w-full relative overflow-hidden transition-colors duration-300 bg-slate-50 dark:bg-slate-950">
             {/* Background Orbs */}
-            <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-brand-500/10 dark:bg-brand-500/5 blur-[130px] rounded-full animate-morph pointer-events-none"></div>
-            <div className="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] bg-indigo-500/10 dark:bg-indigo-500/5 blur-[130px] rounded-full animate-morph-fast pointer-events-none"></div>
+            <div className="absolute top-[-20%] left-[-10%] w-[60%] h-[60%] bg-indigo-500/10 dark:bg-indigo-500/5 blur-[130px] rounded-full animate-morph pointer-events-none"></div>
+            <div className="absolute bottom-[-20%] right-[-10%] w-[60%] h-[60%] bg-violet-500/10 dark:bg-violet-500/5 blur-[130px] rounded-full animate-morph-fast pointer-events-none"></div>
 
             <Container>
                 <div className="w-full max-w-4xl animate-fade-in space-y-8">

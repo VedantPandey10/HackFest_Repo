@@ -1,0 +1,6 @@
+@ReincrewBackend_HostAddress = http://localhost:5252
+
+GET {{ReincrewBackend_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
