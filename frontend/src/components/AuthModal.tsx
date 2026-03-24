@@ -122,19 +122,19 @@ export const AuthModal: React.FC<AuthModalProps> = ({ initialMode, onClose, onSu
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="px-10 pb-10 space-y-4">
+        <form onSubmit={handleSubmit} className="px-8 pb-10 flex flex-col items-center space-y-6">
           {error && (
-            <div className="bg-red-500/10 border border-red-500/20 p-3 rounded-2xl text-[10px] font-bold uppercase tracking-widest text-red-400 text-center">
+            <div className="w-full bg-red-500/10 border border-red-500/20 p-4 rounded-2xl text-[10px] font-bold uppercase tracking-widest text-red-400 text-center">
               {error}
             </div>
           )}
 
-          <div className="space-y-3">
+          <div className="w-full space-y-4">
             {mode === 'CANDIDATE_REGISTER' && (
               <input 
                 placeholder="Full Name"
                 required
-                className="w-full h-14 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl px-5 text-sm outline-none focus:border-indigo-500 text-slate-900 dark:text-white transition-all font-medium"
+                className="w-full h-14 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl px-6 text-sm outline-none focus:border-indigo-500 text-slate-900 dark:text-white transition-all font-medium"
                 value={formData.name}
                 onChange={e => setFormData({ ...formData, name: e.target.value })}
               />
@@ -145,7 +145,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ initialMode, onClose, onSu
                 type="email"
                 placeholder="Email Address"
                 required
-                className="w-full h-14 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl px-5 text-sm outline-none focus:border-indigo-500 text-slate-900 dark:text-white transition-all font-medium"
+                className="w-full h-14 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl px-6 text-sm outline-none focus:border-indigo-500 text-slate-900 dark:text-white transition-all font-medium"
                 value={formData.email}
                 onChange={e => setFormData({ ...formData, email: e.target.value })}
               />
@@ -155,7 +155,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ initialMode, onClose, onSu
               <input 
                 placeholder="Username or Email"
                 required
-                className="w-full h-14 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl px-5 text-sm outline-none focus:border-indigo-500 text-slate-900 dark:text-white transition-all font-medium"
+                className="w-full h-14 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl px-6 text-sm outline-none focus:border-indigo-500 text-slate-900 dark:text-white transition-all font-medium"
                 value={formData.username || formData.email}
                 onChange={e => setFormData({ ...formData, username: e.target.value, email: e.target.value })}
               />
@@ -165,7 +165,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ initialMode, onClose, onSu
               <input 
                 placeholder="Username"
                 required
-                className="w-full h-14 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl px-5 text-sm outline-none focus:border-indigo-500 text-slate-900 dark:text-white transition-all font-medium"
+                className="w-full h-14 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl px-6 text-sm outline-none focus:border-indigo-500 text-slate-900 dark:text-white transition-all font-medium"
                 value={formData.username}
                 onChange={e => setFormData({ ...formData, username: e.target.value })}
               />
@@ -175,7 +175,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ initialMode, onClose, onSu
               <div className="relative group">
                 <select 
                   required
-                  className="w-full h-14 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl px-5 pr-10 text-sm outline-none focus:border-indigo-500 text-slate-900 dark:text-white transition-all font-medium appearance-none cursor-pointer"
+                  className="w-full h-14 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl px-6 pr-12 text-sm outline-none focus:border-indigo-500 text-slate-900 dark:text-white transition-all font-medium appearance-none cursor-pointer"
                   value={formData.position}
                   onChange={e => setFormData({ ...formData, position: e.target.value })}
                 >
@@ -186,7 +186,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ initialMode, onClose, onSu
                     </option>
                   ))}
                 </select>
-                <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500 group-focus-within:text-indigo-500 transition-colors">
+                <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-500 group-focus-within:text-indigo-500 transition-colors">
                   <ChevronDown size={18} />
                 </div>
               </div>
@@ -196,7 +196,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ initialMode, onClose, onSu
               type="password"
               placeholder="Password"
               required
-              className="w-full h-14 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl px-5 text-sm outline-none focus:border-indigo-500 text-slate-900 dark:text-white transition-all font-medium"
+              className="w-full h-14 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl px-6 text-sm outline-none focus:border-indigo-500 text-slate-900 dark:text-white transition-all font-medium"
               value={formData.password}
               onChange={e => setFormData({ ...formData, password: e.target.value })}
             />
@@ -205,12 +205,14 @@ export const AuthModal: React.FC<AuthModalProps> = ({ initialMode, onClose, onSu
           <button 
             type="submit"
             disabled={loading}
-            className="w-full h-16 bg-indigo-600 hover:bg-indigo-700 text-white font-black rounded-[2rem] shadow-xl shadow-indigo-600/20 transition-all flex items-center justify-center gap-3 disabled:opacity-50"
+            className="w-full min-h-[4rem] px-8 bg-indigo-600 hover:bg-indigo-700 text-white font-black rounded-[2rem] shadow-xl shadow-indigo-600/20 transition-all flex items-center justify-center gap-4 disabled:opacity-50"
           >
-            {loading ? "Optimizing..." : (
+            {loading ? <span className="text-[10px] uppercase tracking-widest">Optimizing...</span> : (
               <>
-                {mode.endsWith('REGISTER') ? "Create Account" : "Access Node"} 
-                <ArrowRight size={20} />
+                <span className="text-sm uppercase tracking-widest">
+                  {mode.endsWith('REGISTER') ? "Create Account" : "Access Node"}
+                </span>
+                <ArrowRight size={20} strokeWidth={3} className="shrink-0" />
               </>
             )}
           </button>

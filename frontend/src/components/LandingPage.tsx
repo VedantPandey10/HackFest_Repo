@@ -37,7 +37,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onCandidateLogin, onAd
       </div>
 
       {/* Navigation */}
-      <nav className="fixed top-0 w-full z-50 px-6 py-8 flex justify-between items-center bg-transparent">
+      <nav className="fixed top-0 left-0 right-0 w-full z-50 px-6 py-8 flex justify-between items-center bg-transparent">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-600/20">
             <BrainCircuit className="text-white" size={24} />
@@ -112,7 +112,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onCandidateLogin, onAd
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.1 }}
               viewport={{ once: true }}
-              className="glass-card p-10 rounded-[3rem]"
+              className="glass-card p-10 rounded-[3rem] flex flex-col items-center text-center"
             >
               <div className="w-12 h-12 rounded-2xl bg-indigo-500/20 flex items-center justify-center mb-6 text-indigo-400">
                 {feature.icon}
