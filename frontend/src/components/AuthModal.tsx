@@ -92,12 +92,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({ initialMode, onClose, onSu
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 dark:bg-slate-950/90 backdrop-blur-md"
+      className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-blue-900/20 dark:bg-slate-950/90 backdrop-blur-md"
     >
       <motion.div 
         initial={{ scale: 0.9, y: 20 }}
         animate={{ scale: 1, y: 0 }}
-        className="glass-panel w-full max-w-md rounded-[3.5rem] overflow-hidden bg-blue-50/90 dark:bg-slate-950/80 backdrop-blur-2xl border-2 border-blue-200 dark:border-indigo-500/30 shadow-2xl"
+        className="w-full max-w-md rounded-[3.5rem] overflow-hidden bg-white/90 dark:bg-slate-950/80 backdrop-blur-2xl border-2 border-blue-200 dark:border-indigo-500/30 shadow-2xl shadow-blue-200/30 dark:shadow-black/40"
       >
         {/* Header */}
         <div className="px-6 pt-10 pb-6 text-center relative">

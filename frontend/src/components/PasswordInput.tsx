@@ -27,7 +27,7 @@ export const PasswordInput: React.FC<PasswordInputProps> = ({
         type={showPassword ? "text" : "password"}
         placeholder={placeholder}
         required={required}
-        className="w-full h-14 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl pl-14 pr-14 text-sm outline-none focus:border-brand-500 text-slate-900 dark:text-white transition-all font-medium"
+        className="w-full h-14 bg-blue-100/50 dark:bg-white/5 border border-blue-200/50 dark:border-white/10 rounded-2xl pl-14 pr-14 text-sm outline-none focus:border-indigo-500 text-slate-900 dark:text-white transition-all font-medium"
         value={value}
         onChange={e => onChange(e.target.value)}
       />
