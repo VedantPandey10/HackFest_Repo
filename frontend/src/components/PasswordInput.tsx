@@ -20,7 +20,9 @@ export const PasswordInput: React.FC<PasswordInputProps> = ({
 
   return (
     <div className={`relative group ${className}`}>
-      <Lock className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-brand-500 transition-colors" size={18} />
+      <div className="absolute left-6 inset-y-0 flex items-center pointer-events-none">
+        <Lock className="text-slate-400 group-focus-within:text-brand-500 transition-colors" size={18} />
+      </div>
       <input 
         type={showPassword ? "text" : "password"}
         placeholder={placeholder}
@@ -29,14 +31,16 @@ export const PasswordInput: React.FC<PasswordInputProps> = ({
         value={value}
         onChange={e => onChange(e.target.value)}
       />
-      <button
-        type="button"
-        onClick={() => setShowPassword(!showPassword)}
-        className="absolute right-6 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-white transition-colors p-1"
-        tabIndex={-1}
-      >
-        {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-      </button>
+      <div className="absolute right-6 inset-y-0 flex items-center">
+        <button
+          type="button"
+          onClick={() => setShowPassword(!showPassword)}
+          className="text-slate-400 hover:text-slate-600 dark:hover:text-white transition-colors p-1 flex items-center justify-center"
+          tabIndex={-1}
+        >
+          {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+        </button>
+      </div>
     </div>
   );
 };
