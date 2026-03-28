@@ -97,7 +97,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ initialMode, onClose, onSu
       <motion.div 
         initial={{ scale: 0.9, y: 20 }}
         animate={{ scale: 1, y: 0 }}
-        className="glass-panel w-full max-w-md rounded-[3rem] overflow-hidden bg-bg-main dark:bg-surface-panel"
+        className="glass-panel w-full max-w-md rounded-[3.5rem] overflow-hidden bg-blue-50/90 dark:bg-slate-950/80 backdrop-blur-2xl border-2 border-blue-200 dark:border-indigo-500/30 shadow-2xl"
       >
         {/* Header */}
         <div className="px-6 pt-10 pb-6 text-center relative">
@@ -108,8 +108,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({ initialMode, onClose, onSu
             <X size={20} />
           </button>
           
-          <div className="w-16 h-16 rounded-3xl bg-indigo-600/20 flex items-center justify-center mx-auto mb-6 border border-indigo-500/30">
-            {mode.startsWith('ADMIN') ? <ShieldCheck className="text-indigo-400" /> : <User className="text-indigo-400" />}
+          <div className="w-16 h-16 rounded-3xl bg-blue-100 dark:bg-indigo-600/20 flex items-center justify-center mx-auto mb-6 border border-blue-200 dark:border-indigo-500/30 shadow-inner">
+            {mode.startsWith('ADMIN') ? <ShieldCheck className="text-blue-600 dark:text-indigo-400" /> : <User className="text-blue-600 dark:text-indigo-400" />}
           </div>
           
           <h2 className="text-3xl font-black tracking-tighter mb-2 text-slate-900 dark:text-white">
@@ -136,7 +136,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ initialMode, onClose, onSu
               <input 
                 placeholder="Full Name"
                 required
-                className="w-full h-14 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl px-6 text-sm outline-none focus:border-indigo-500 text-slate-900 dark:text-white transition-all font-medium"
+                className="w-full h-14 bg-blue-100/50 dark:bg-white/5 border border-blue-200/50 dark:border-white/10 rounded-2xl px-6 text-sm outline-none focus:border-indigo-500 text-slate-900 dark:text-white transition-all font-medium"
                 value={formData.name}
                 onChange={e => setFormData({ ...formData, name: e.target.value })}
               />
@@ -147,7 +147,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ initialMode, onClose, onSu
                 type="email"
                 placeholder="Email Address"
                 required
-                className="w-full h-14 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl px-6 text-sm outline-none focus:border-indigo-500 text-slate-900 dark:text-white transition-all font-medium"
+                className="w-full h-14 bg-blue-100/50 dark:bg-white/5 border border-blue-200/50 dark:border-white/10 rounded-2xl px-6 text-sm outline-none focus:border-indigo-500 text-slate-900 dark:text-white transition-all font-medium"
                 value={formData.email}
                 onChange={e => setFormData({ ...formData, email: e.target.value })}
               />
@@ -157,7 +157,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ initialMode, onClose, onSu
               <input 
                 placeholder="Username or Email"
                 required
-                className="w-full h-14 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl px-6 text-sm outline-none focus:border-indigo-500 text-slate-900 dark:text-white transition-all font-medium"
+                className="w-full h-14 bg-blue-100/50 dark:bg-white/5 border border-blue-200/50 dark:border-white/10 rounded-2xl px-6 text-sm outline-none focus:border-indigo-500 text-slate-900 dark:text-white transition-all font-medium"
                 value={formData.username || formData.email}
                 onChange={e => setFormData({ ...formData, username: e.target.value, email: e.target.value })}
               />
@@ -177,7 +177,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ initialMode, onClose, onSu
               <div className="relative group">
                 <select 
                   required
-                  className="w-full h-14 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl px-6 pr-12 text-sm outline-none focus:border-indigo-500 text-slate-900 dark:text-white transition-all font-medium appearance-none cursor-pointer"
+                  className="w-full h-14 bg-blue-100/50 dark:bg-white/5 border border-blue-200/50 dark:border-white/10 rounded-2xl px-6 pr-12 text-sm outline-none focus:border-indigo-500 text-slate-900 dark:text-white transition-all font-medium appearance-none cursor-pointer"
                   value={formData.position}
                   onChange={e => setFormData({ ...formData, position: e.target.value })}
                 >
@@ -221,7 +221,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ initialMode, onClose, onSu
               <button 
                 type="button" 
                 onClick={() => setMode('CANDIDATE_REGISTER')}
-                className="text-[10px] font-black uppercase tracking-widest text-indigo-400 hover:text-white transition-colors"
+                className="text-[10px] font-black uppercase tracking-widest text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-white transition-colors"
               >
                 New candidate? Create account
               </button>
@@ -230,7 +230,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ initialMode, onClose, onSu
               <button 
                 type="button" 
                 onClick={() => setMode('CANDIDATE_LOGIN')}
-                className="text-[10px] font-black uppercase tracking-widest text-indigo-400 hover:text-white transition-colors"
+                className="text-[10px] font-black uppercase tracking-widest text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-white transition-colors"
               >
                 Already registered? Login here
               </button>
@@ -239,7 +239,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ initialMode, onClose, onSu
               <button 
                 type="button" 
                 onClick={onAdminRegistrationRedirect || (() => setMode('ADMIN_REGISTER'))}
-                className="text-[10px] font-black uppercase tracking-widest text-indigo-400 hover:text-white transition-colors"
+                className="text-[10px] font-black uppercase tracking-widest text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-white transition-colors"
               >
                 Register as new admin
               </button>
