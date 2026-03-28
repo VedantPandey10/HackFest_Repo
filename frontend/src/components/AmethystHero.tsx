@@ -46,14 +46,14 @@ export const AmethystHero: React.FC<AmethystHeroProps> = ({ onGoToLanding }) => 
       <SparkleLayer />
       
       {/* Background radial glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[700px] bg-gradient-radial from-lavender/10 to-transparent blur-[120px] pointer-events-none opacity-40 animate-pulse-slow" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[700px] dark:bg-gradient-radial dark:from-lavender/10 bg-gradient-radial from-indigo-400/20 to-transparent blur-[120px] pointer-events-none opacity-60 animate-pulse-slow" />
       
         {/* Hero content wrapper */}
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 1, ease: "easeOut" }}
-          className="glass-panel p-12 md:p-20 rounded-[4rem] border border-white/10 relative overflow-hidden flex flex-col items-center"
+          className="glass-panel p-12 md:p-20 rounded-[4rem] border border-indigo-200/40 dark:border-white/10 bg-white/60 dark:bg-transparent backdrop-blur-2xl relative overflow-hidden flex flex-col items-center shadow-2xl shadow-indigo-200/30 dark:shadow-none"
         >
           {/* Internal glow for the glass panel */}
           <div className="absolute -top-24 -right-24 w-64 h-64 bg-lavender/20 blur-[80px] rounded-full pointer-events-none" />
@@ -64,7 +64,7 @@ export const AmethystHero: React.FC<AmethystHeroProps> = ({ onGoToLanding }) => 
             initial={{ y: 40, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ ...SPRING_TRANSITION, delay: 0.3 }}
-            className="text-5xl md:text-8xl lg:text-[7rem] font-black tracking-tighter text-white leading-[0.85] mb-12 italic uppercase max-w-full break-words relative z-10"
+            className="text-5xl md:text-8xl lg:text-[7rem] font-black tracking-tighter text-slate-900 dark:text-white leading-[0.85] mb-12 italic uppercase max-w-full break-words relative z-10"
           >
             Hire Smarter. <br />
             <span className="text-transparent bg-clip-text bg-amethyst-gradient">Interview Better.</span>
@@ -75,7 +75,7 @@ export const AmethystHero: React.FC<AmethystHeroProps> = ({ onGoToLanding }) => 
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ ...SPRING_TRANSITION, delay: 0.4 }}
-            className="max-w-2xl text-lg md:text-xl font-medium text-white/50 leading-relaxed tracking-tight mb-12 uppercase italic relative z-10"
+            className="max-w-2xl text-lg md:text-xl font-medium text-slate-600 dark:text-white/50 leading-relaxed tracking-tight mb-12 uppercase italic relative z-10"
           >
             Your personalized HR core—designed to master PI rounds, eliminate critical errors, and build unshakeable self-confidence through autonomous interview simulations.
           </motion.p>
@@ -97,7 +97,7 @@ export const AmethystHero: React.FC<AmethystHeroProps> = ({ onGoToLanding }) => 
                  className="absolute inset-0 bg-gradient-to-r from-lavender to-indigo-500 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
               />
             </button>
-            <button className="px-12 py-6 rounded-[2.5rem] bg-white/5 border border-white/10 hover:border-white/20 font-black text-lg transition-all duration-300 backdrop-blur-md flex items-center gap-4 text-white hover:bg-white/10 uppercase italic">
+            <button className="px-12 py-6 rounded-[2.5rem] bg-indigo-50 dark:bg-white/5 border border-indigo-200 dark:border-white/10 hover:border-indigo-400 dark:hover:border-white/20 font-black text-lg transition-all duration-300 backdrop-blur-md flex items-center gap-4 text-indigo-700 dark:text-white hover:bg-indigo-100 dark:hover:bg-white/10 uppercase italic">
               Watch Demo <Play size={20} className="fill-current" />
             </button>
           </motion.div>
@@ -110,8 +110,8 @@ export const AmethystHero: React.FC<AmethystHeroProps> = ({ onGoToLanding }) => 
         className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center"
       >
         {/* Scroll label removed for minimalism */}
-        <div className="w-px h-16 bg-gradient-to-b from-lavender to-transparent" />
-        <ChevronDown size={14} className="text-lavender animate-bounce mt-2" />
+        <div className="w-px h-16 bg-gradient-to-b from-indigo-500 dark:from-lavender to-transparent" />
+        <ChevronDown size={14} className="text-indigo-500 dark:text-lavender animate-bounce mt-2" />
       </motion.div>
     </section>
   );

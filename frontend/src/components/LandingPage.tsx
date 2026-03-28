@@ -55,7 +55,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onCandidateLogin, onAd
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-500/10 border border-indigo-500/20 mb-8"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-indigo-100 dark:bg-indigo-500/10 border border-indigo-300/50 dark:border-indigo-500/20 mb-8"
           >
             <Sparkles size={14} className="text-indigo-500" />
             <span className="text-[10px] font-black uppercase tracking-widest text-indigo-500">Next-Gen Interview Intelligence</span>
@@ -66,7 +66,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onCandidateLogin, onAd
             <span className="shimmer-text">HUMAN POTENTIAL</span>
           </h1>
           
-          <p className="text-lg md:text-xl text-text-main/80 dark:text-slate-400 max-w-2xl mx-auto mb-12 font-medium">
+          <p className="text-lg md:text-xl text-indigo-900/70 dark:text-slate-400 max-w-2xl mx-auto mb-12 font-medium">
             Deploy advanced behavioral analysis to discover top talent. Reicrew.AI is the neural core for modern recruitment.
           </p>
 
@@ -81,7 +81,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onCandidateLogin, onAd
             </motion.button>
             <button 
               onClick={onLearnMore}
-              className="px-8 py-5 rounded-[2rem] text-text-main dark:text-slate-300 font-bold border border-slate-200/20 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/5 transition-all"
+              className="px-8 py-5 rounded-[2rem] text-indigo-700 dark:text-slate-300 font-bold border border-indigo-200 dark:border-white/10 hover:bg-indigo-50 dark:hover:bg-white/5 transition-all"
             >
               Learn How it Works
             </button>
@@ -103,15 +103,15 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onCandidateLogin, onAd
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ delay: idx * 0.1, duration: 0.6 }}
               viewport={{ once: true, amount: 0.3 }}
-              className="glass-card p-12 rounded-[3.5rem] flex flex-col items-center text-center group"
+              className="glass-card p-12 rounded-[3.5rem] flex flex-col items-center text-center group bg-white/70 dark:bg-transparent border border-indigo-100 dark:border-white/5 shadow-xl shadow-indigo-100/50 dark:shadow-none hover:shadow-indigo-200/60 dark:hover:shadow-none transition-shadow duration-500"
             >
-              <div className="w-16 h-16 rounded-[1.5rem] bg-indigo-500/10 dark:bg-indigo-500/20 flex items-center justify-center mb-8 text-indigo-600 dark:text-indigo-400 group-hover:scale-110 transition-transform duration-500 shadow-inner">
+              <div className="w-16 h-16 rounded-[1.5rem] bg-indigo-100 dark:bg-indigo-500/20 flex items-center justify-center mb-8 text-indigo-600 dark:text-indigo-400 group-hover:scale-110 group-hover:bg-indigo-600 group-hover:text-white transition-all duration-500 shadow-inner">
                 {React.isValidElement(feature.icon) && React.cloneElement(feature.icon as React.ReactElement<any>, { size: 32 })}
               </div>
               <h3 className="text-2xl font-black text-slate-900 dark:text-white mb-4 uppercase tracking-tighter">
                 {feature.title}
               </h3>
-              <p className="text-base font-medium text-slate-600 dark:text-slate-400 leading-relaxed">
+              <p className="text-base font-medium text-indigo-900/60 dark:text-slate-400 leading-relaxed">
                 {feature.desc}
               </p>
             </motion.div>
@@ -123,7 +123,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onCandidateLogin, onAd
       <PricingSection onEnterpriseCTA={onEnterpriseCTA} />
 
       {/* Footer */}
-      <footer className="py-20 border-t border-slate-900/10 dark:border-white/5 relative z-10 bg-slate-50/30 dark:bg-transparent">
+      <footer className="py-20 border-t border-indigo-100 dark:border-white/5 relative z-10 bg-white/40 dark:bg-transparent backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-8">
           <div className="flex items-center gap-4">
             <div className="w-8 h-8 rounded-lg bg-indigo-600/20 flex items-center justify-center">

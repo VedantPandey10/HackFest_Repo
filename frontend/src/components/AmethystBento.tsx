@@ -36,8 +36,7 @@ const BentoCard: React.FC<BentoCardProps> = ({ title, children, className, icon:
     },
     hover: {
       scale: 1.02,
-      backgroundColor: "rgba(15, 23, 42, 0.8)",
-      boxShadow: "0px 20px 60px rgba(99, 102, 241, 0.15)",
+      boxShadow: "0px 20px 60px rgba(99, 102, 241, 0.2)",
     }
   };
 
@@ -129,11 +128,11 @@ const BentoCard: React.FC<BentoCardProps> = ({ title, children, className, icon:
       </div>
 
       <div className="relative z-20 h-full flex flex-col">
-        <div className="mb-6 w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center group-hover:bg-lavender group-hover:text-main group-hover:shadow-[0_0_20px_rgba(99,102,241,0.4)] transition-all duration-500">
+        <div className="mb-6 w-12 h-12 rounded-2xl bg-indigo-100 dark:bg-white/5 border border-indigo-200 dark:border-white/10 flex items-center justify-center group-hover:bg-indigo-600 dark:group-hover:bg-lavender group-hover:text-white dark:group-hover:text-main group-hover:shadow-[0_0_20px_rgba(99,102,241,0.4)] transition-all duration-500 text-indigo-600 dark:text-white">
           {Icon && <Icon size={20} />}
         </div>
         
-        <h3 className="text-3xl font-black tracking-tight mb-4 text-white leading-tight uppercase italic group-hover:text-lavender transition-colors duration-500">
+        <h3 className="text-3xl font-black tracking-tight mb-4 text-slate-900 dark:text-white leading-tight uppercase italic group-hover:text-indigo-600 dark:group-hover:text-lavender transition-colors duration-500">
           {title}
         </h3>
         
@@ -169,12 +168,12 @@ export const AmethystBento: React.FC = () => {
             viewport={{ once: true }}
             transition={SPRING_TRANSITION}
           >
-            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-lavender/40 block mb-4">Neural Infrastructure</span>
-            <h2 className="text-6xl font-black italic tracking-tighter text-white leading-[0.8] mb-8 uppercase">
+            <span className="text-[10px] font-black uppercase tracking-[0.4em] text-indigo-400 dark:text-lavender/40 block mb-4">Neural Infrastructure</span>
+            <h2 className="text-6xl font-black italic tracking-tighter text-slate-900 dark:text-white leading-[0.8] mb-8 uppercase">
               Future <br />
-              <span className="text-lavender">of Talent.</span>
+              <span className="text-indigo-600 dark:text-lavender">of Talent.</span>
             </h2>
-            <p className="text-white/30 font-medium leading-relaxed tracking-tight italic uppercase text-[10px]">
+            <p className="text-slate-500 dark:text-white/30 font-medium leading-relaxed tracking-tight italic uppercase text-[10px]">
               Deploy autonomous agents that map human potential with surgical precision.
             </p>
           </motion.div>
@@ -198,7 +197,7 @@ export const AmethystBento: React.FC = () => {
               <p className="text-lg font-medium text-white/50 leading-snug uppercase">
                 Synchronous behavioral and micro-expression mapping. 
               </p>
-              <div className="mt-4 flex items-center justify-between gap-2 p-5 rounded-3xl bg-white/5 border border-white/5">
+              <div className="mt-4 flex items-center justify-between gap-2 p-5 rounded-3xl bg-indigo-50 dark:bg-white/5 border border-indigo-100 dark:border-white/5">
                 <div className="flex gap-1.5 h-12 items-end">
                   {[0.4, 0.7, 0.5, 0.9, 0.6, 0.8, 0.4].map((h, i) => (
                     <motion.div 
@@ -223,8 +222,8 @@ export const AmethystBento: React.FC = () => {
               <p className="text-lg font-medium text-white/50 leading-snug mb-8 uppercase">
                 Sub-millisecond analysis of complex problem-solving patterns.
               </p>
-              <div className="mt-auto rounded-3xl bg-main border border-white/5 overflow-hidden font-mono text-[10px] md:text-xs">
-                 <div className="p-6 space-y-1 text-white/30 italic">
+              <div className="mt-auto rounded-3xl bg-indigo-950/5 dark:bg-main border border-indigo-100 dark:border-white/5 overflow-hidden font-mono text-[10px] md:text-xs">
+                 <div className="p-6 space-y-1 text-slate-400 dark:text-white/30 italic">
                    <div className="flex gap-4"><span><span className="text-lavender">const</span> engine = <span className="text-lilac">await</span> AI.<span className="text-lilac">sync</span>()</span></div>
                    <div className="flex gap-4"><span><span className="text-lavender">engine</span>.<span className="text-lilac">mapPotential</span>(candidate_id)</span></div>
                    <div className="flex gap-4"><span><span className="text-white/10"># Processing high-level vectors...</span></span></div>
@@ -240,10 +239,10 @@ export const AmethystBento: React.FC = () => {
             className="md:col-span-2 md:row-span-1 lg:col-span-3 lg:row-span-1"
           >
              <div className="flex items-center justify-between pr-4 h-full">
-               <p className="text-lg font-medium text-white/50 leading-snug uppercase">
+               <p className="text-lg font-medium text-slate-500 dark:text-white/50 leading-snug uppercase">
                  Deciphering talent across <br /> every dialect.
                </p>
-               <div className="text-5xl font-black text-white italic opacity-10 group-hover:opacity-100 transition-opacity duration-700">GLO.</div>
+               <div className="text-5xl font-black text-slate-900/10 dark:text-white/10 italic group-hover:text-indigo-600/80 dark:group-hover:text-white group-hover:opacity-100 transition-all duration-700">GLO.</div>
             </div>
           </BentoCard>
 
@@ -254,10 +253,10 @@ export const AmethystBento: React.FC = () => {
             className="md:col-span-2 md:row-span-1 lg:col-span-3 lg:row-span-1"
           >
              <div className="flex items-center justify-between pr-4 h-full">
-               <p className="text-lg font-medium text-white/50 leading-snug uppercase">
+               <p className="text-lg font-medium text-slate-500 dark:text-white/50 leading-snug uppercase">
                  Instantaneous growth <br /> reporting.
                </p>
-               <div className="text-5xl font-black text-white italic opacity-10 group-hover:opacity-100 transition-opacity duration-700">REP.</div>
+               <div className="text-5xl font-black text-slate-900/10 dark:text-white/10 italic group-hover:text-indigo-600/80 dark:group-hover:text-white group-hover:opacity-100 transition-all duration-700">REP.</div>
             </div>
           </BentoCard>
         </motion.div>
