@@ -8,9 +8,10 @@ interface LandingPageProps {
   onCandidateLogin: () => void;
   onAdminLogin: () => void;
   onEnterpriseCTA: () => void;
+  onLearnMore: () => void;
 }
 
-export const LandingPage: React.FC<LandingPageProps> = ({ onCandidateLogin, onAdminLogin, onEnterpriseCTA }) => {
+export const LandingPage: React.FC<LandingPageProps> = ({ onCandidateLogin, onAdminLogin, onEnterpriseCTA, onLearnMore }) => {
   return (
     <div className="min-h-screen bg-transparent relative overflow-x-hidden selection:bg-indigo-500 selection:text-white transition-colors duration-300">
       {/* Background Orbs */}
@@ -78,7 +79,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onCandidateLogin, onAd
             >
               Start Candidate Journey <ArrowRight className="group-hover:translate-x-2 transition-all" />
             </motion.button>
-            <button className="px-8 py-5 rounded-[2rem] text-text-main dark:text-slate-300 font-bold border border-slate-200/20 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/5 transition-all">
+            <button 
+              onClick={onLearnMore}
+              className="px-8 py-5 rounded-[2rem] text-text-main dark:text-slate-300 font-bold border border-slate-200/20 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/5 transition-all"
+            >
               Learn How it Works
             </button>
           </div>

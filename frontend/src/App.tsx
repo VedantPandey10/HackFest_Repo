@@ -2,6 +2,7 @@ import * as React from 'react';
 const { useState, useEffect } = React;
 import { motion, AnimatePresence } from 'framer-motion';
 import { LandingPage } from './components/LandingPage';
+import { HowItWorks } from './components/HowItWorks';
 import { AuthModal, AuthMode } from './components/AuthModal';
 import { AdminDashboard } from './components/AdminDashboard';
 import { MainLayout } from './components/MainLayout';
@@ -21,6 +22,7 @@ import { useTheme } from './context/ThemeContext';
 
 enum AppView {
   LANDING,
+  LEARN_HOW_IT_WORKS,
   AUTHENTICATED,
   ADMIN
 }
@@ -107,7 +109,20 @@ export default function App() {
               onCandidateLogin={() => setShowAuthModal('CANDIDATE_LOGIN')}
               onAdminLogin={() => setShowAuthModal('ADMIN_LOGIN')}
               onEnterpriseCTA={() => setShowEnterpriseModal(true)}
+              onLearnMore={() => setView(AppView.LEARN_HOW_IT_WORKS)}
             />
+          </motion.div>
+        )}
+
+        {view === AppView.LEARN_HOW_IT_WORKS && (
+          <motion.div 
+            key="how-it-works"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="min-h-screen w-full"
+          >
+            <HowItWorks onBack={() => setView(AppView.LANDING)} />
           </motion.div>
         )}
 
