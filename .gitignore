@@ -7,9 +7,16 @@ dist-ssr/
 # .NET
 backend/bin/
 backend/obj/
+app-owner-portal/**/bin/
+app-owner-portal/**/obj/
 *.user
 *.suo
 *.log
+*.exe
+*.dll
+*.pdb
+*.obj
+*.bin
 
 # Env files
 .env

@@ -19,7 +19,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onGoToLanding, onEnterpriseC
   ];
 
   return (
-    <div className="min-h-screen bg-amethyst-main bg-slate-950 overflow-x-hidden selection:bg-amethyst-lavender selection:text-amethyst-main relative">
+    <div className="min-h-screen bg-amethyst-main bg-slate-950 dark overflow-x-hidden selection:bg-amethyst-lavender selection:text-amethyst-main relative">
       {/* Dynamic Background Orbs for Glassmorphism */}
       <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
         {orbs.map((orb, i) => (

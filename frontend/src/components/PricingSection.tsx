@@ -53,41 +53,43 @@ export const PricingSection: React.FC<{ onEnterpriseCTA?: () => void }> = ({ onE
                     {plans.map((plan, idx) => (
                         <motion.div
                             key={plan.name}
-                            initial={{ opacity: 0 }}
-                            whileInView={{ opacity: 1 }}
-                            transition={{ delay: idx * 0.1, duration: 0.5 }}
+                            initial={{ opacity: 0, y: 30 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            transition={{ delay: idx * 0.1, duration: 0.6 }}
                             viewport={{ once: true, amount: 0.3 }}
-                            className={`glass-card p-10 rounded-[3rem] relative flex flex-col ${
-                                plan.popular ? 'border-2 border-indigo-500/50' : ''
+                            className={`glass-card !overflow-visible p-14 rounded-[4.5rem] relative flex flex-col group transition-all duration-500 bg-blue-50/80 dark:bg-slate-950/50 backdrop-blur-xl border-2 shadow-xl ${
+                                plan.popular 
+                                    ? 'border-blue-200 dark:border-indigo-500/50 shadow-blue-500/10 dark:shadow-[0_0_50px_-12px_rgba(99,102,241,0.2)]' 
+                                    : 'border-blue-100 dark:border-indigo-500/20 shadow-blue-400/5 dark:shadow-slate-950/20'
                             }`}
                         >
                             {plan.popular && (
-                                <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-indigo-600 text-white text-[10px] font-black uppercase tracking-widest py-2 px-4 rounded-full shadow-xl shadow-indigo-600/30">
+                                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-indigo-600 text-white text-[10px] font-black uppercase tracking-widest py-2 px-4 rounded-full shadow-xl shadow-indigo-600/30 z-20">
                                     Most Powerful
                                 </div>
                             )}
 
-                            <div className="mb-8">
-                                <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 dark:bg-indigo-500/20 flex items-center justify-center mb-6 border border-indigo-500/20">
-                                    {plan.icon}
+                            <div className="mb-10 text-center md:text-left">
+                                <div className="w-16 h-16 rounded-3xl bg-blue-100 dark:bg-indigo-500/20 flex items-center justify-center mb-8 border border-blue-200 dark:border-indigo-500/20 text-blue-600 dark:text-indigo-400 group-hover:scale-110 transition-transform duration-500 shadow-inner">
+                                    {React.isValidElement(plan.icon) && React.cloneElement(plan.icon as React.ReactElement<any>, { size: 28 })}
                                 </div>
-                                <h3 className="text-2xl font-black text-text-main mb-2">{plan.name}</h3>
-                                <p className="text-text-muted text-sm font-medium">{plan.tagline}</p>
+                                <h3 className="text-3xl font-black text-slate-900 dark:text-white mb-2 tracking-tighter uppercase">{plan.name}</h3>
+                                <p className="text-slate-600 dark:text-slate-400 text-base font-medium">{plan.tagline}</p>
                             </div>
 
-                            <div className="mb-8">
-                                <span className="text-5xl font-black text-text-main">
+                            <div className="mb-10 p-8 rounded-[2rem] bg-blue-100/50 dark:bg-white/5 border border-blue-200/50 dark:border-white/5 text-center">
+                                <span className="text-6xl font-black text-slate-900 dark:text-white tracking-tighter">
                                     {plan.price === "Custom" ? "" : "₹"}
                                     {plan.price}
                                 </span>
-                                {plan.price !== "Custom" && <span className="text-text-muted ml-2 font-bold uppercase tracking-widest text-xs">/ Month</span>}
+                                {plan.price !== "Custom" && <span className="text-slate-500 dark:text-slate-400 ml-2 font-black uppercase tracking-widest text-xs">/ Month</span>}
                             </div>
 
-                            <ul className="space-y-4 mb-10 flex-grow">
+                            <ul className="space-y-5 mb-12 flex-grow">
                                 {plan.features.map(feature => (
-                                    <li key={feature} className="flex items-center gap-3 text-sm font-medium text-text-main/90">
-                                        <div className="w-5 h-5 rounded-full bg-indigo-500/20 flex items-center justify-center flex-shrink-0">
-                                            <Check size={12} className="text-indigo-500" />
+                                    <li key={feature} className="flex items-center gap-4 text-base font-medium text-slate-700 dark:text-slate-300">
+                                        <div className="w-6 h-6 rounded-full bg-blue-100 dark:bg-indigo-500/20 flex items-center justify-center flex-shrink-0 border border-blue-200 dark:border-indigo-500/20">
+                                            <Check size={14} className="text-blue-600 dark:text-indigo-400" />
                                         </div>
                                         {feature}
                                     </li>
@@ -98,10 +100,10 @@ export const PricingSection: React.FC<{ onEnterpriseCTA?: () => void }> = ({ onE
                                 whileHover={{ scale: 1.02 }}
                                 whileTap={{ scale: 0.98 }}
                                 onClick={plan.popular ? onEnterpriseCTA : undefined}
-                                className={`w-full py-4 rounded-2xl font-black uppercase tracking-widest text-sm transition-all ${
+                                className={`w-full py-5 rounded-full font-black uppercase tracking-widest text-sm transition-all bg-indigo-600 text-white shadow-xl hover:bg-indigo-700 ${
                                     plan.popular 
-                                    ? 'bg-indigo-600 text-white shadow-xl shadow-indigo-600/20 hover:bg-indigo-700' 
-                                    : 'bg-slate-200 dark:bg-white/10 text-slate-900 dark:text-white hover:bg-slate-300 dark:hover:bg-white/20'
+                                    ? 'shadow-indigo-600/20' 
+                                    : 'bg-indigo-600/80 shadow-indigo-600/10'
                                 }`}
                             >
                                 {plan.cta}
