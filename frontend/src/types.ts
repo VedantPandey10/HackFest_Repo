@@ -13,7 +13,18 @@ export interface Candidate {
   idNumber?: string;
   profilePhoto?: string;
   idCardImage?: string;
+  resumeText?: string;
+  resumeFileName?: string;
+  passwordHash?: string;
+  plan?: string;
+  proctoringSettings?: ProctoringSettings;
   isVerified?: boolean;
+}
+
+export interface ProctoringSettings {
+  eyeTracking: boolean;
+  multiFace: boolean;
+  tabSwitching: boolean;
 }
 
 export interface Question {

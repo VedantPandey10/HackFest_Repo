@@ -56,7 +56,10 @@ export const InterviewScreen: React.FC<InterviewScreenProps> = ({ candidate, onC
   } = useSpeech();
 
   // ─── Fullscreen Lockdown ───────────────────────────────────
-  const isLockdownActive = isCameraReady && status !== InterviewStatus.IDLE && status !== InterviewStatus.LOCKED;
+  const isLockdownActive = isCameraReady && 
+    status !== InterviewStatus.IDLE && 
+    status !== InterviewStatus.LOCKED && 
+    candidate.proctoringSettings?.tabSwitching !== false;
 
   const handleLockdownViolation = useCallback((violation: LockdownViolation) => {
     if (statusRef.current === InterviewStatus.LOCKED) return;
@@ -484,6 +487,7 @@ export const InterviewScreen: React.FC<InterviewScreenProps> = ({ candidate, onC
               isLocked={false}
               onStreamReady={handleCameraStreamReady}
               sensitivity={settings?.proctoring.sensitivity || 'Medium'}
+              proctoringSettings={candidate.proctoringSettings}
             />
             {/* Visual HUD overlay */}
             <div className="absolute inset-0 pointer-events-none p-4 flex flex-col justify-between">
@@ -520,20 +524,45 @@ export const InterviewScreen: React.FC<InterviewScreenProps> = ({ candidate, onC
               {/* Telemetry Items */}
               <div className="grid grid-cols-1 gap-5">
                 {[
-                  { label: 'Gaze Focus', status: visualMetrics.isLookingAtCamera ? 'Stable' : 'Deficit', active: visualMetrics.isLookingAtCamera, color: 'brand' },
-                  { label: 'Pose Integrity', status: visualMetrics.headPose === 'FORWARD' ? 'Aligned' : 'Skewed', active: visualMetrics.headPose === 'FORWARD', color: 'indigo' },
-                  { label: 'Object Breach', status: visualMetrics.suspectedPhoneUse ? 'Compromised' : 'Secured', active: !visualMetrics.suspectedPhoneUse, color: 'red' },
-                  { label: 'Audio Leak', status: visualMetrics.isTalking ? 'Detected' : 'Silent', active: !visualMetrics.isTalking, color: 'amber' },
+                  { 
+                    label: 'Gaze Focus', 
+                    status: candidate.proctoringSettings?.eyeTracking === false ? 'Disabled' : (visualMetrics.isLookingAtCamera ? 'Stable' : 'Deficit'), 
+                    active: candidate.proctoringSettings?.eyeTracking === false ? true : visualMetrics.isLookingAtCamera, 
+                    disabled: candidate.proctoringSettings?.eyeTracking === false 
+                  },
+                  { 
+                    label: 'Pose Integrity', 
+                    status: candidate.proctoringSettings?.eyeTracking === false ? 'Disabled' : (visualMetrics.headPose === 'FORWARD' ? 'Aligned' : 'Skewed'), 
+                    active: candidate.proctoringSettings?.eyeTracking === false ? true : visualMetrics.headPose === 'FORWARD',
+                    disabled: candidate.proctoringSettings?.eyeTracking === false 
+                  },
+                  { 
+                    label: 'Object Breach', 
+                    status: candidate.proctoringSettings?.eyeTracking === false ? 'Disabled' : (visualMetrics.suspectedPhoneUse ? 'Compromised' : 'Secured'), 
+                    active: candidate.proctoringSettings?.eyeTracking === false ? true : !visualMetrics.suspectedPhoneUse,
+                    disabled: candidate.proctoringSettings?.eyeTracking === false 
+                  },
+                  { 
+                    label: 'Audio Leak', 
+                    status: visualMetrics.isTalking ? 'Detected' : 'Silent', 
+                    active: !visualMetrics.isTalking 
+                  },
                 ].map((item, i) => (
-                  <div key={i} className="flex items-center justify-between group">
+                  <div key={i} className={`flex items-center justify-between group ${(item as any).disabled ? 'opacity-50' : ''}`}>
                     <div className="flex items-center gap-3">
-                      <div className={`w-1.5 h-10 rounded-full transition-all ${item.active ? 'bg-emerald-500/20' : 'bg-red-500/50 shadow-[0_0_8px_rgba(239,68,68,0.5)] animate-pulse'}`}></div>
+                      <div className={`w-1.5 h-10 rounded-full transition-all ${
+                        (item as any).disabled ? 'bg-slate-500/20' : 
+                        item.active ? 'bg-emerald-500/20' : 'bg-red-500/50 shadow-[0_0_8px_rgba(239,68,68,0.5)] animate-pulse'
+                      }`}></div>
                       <div>
                         <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest mb-0.5">{item.label}</p>
-                        <p className={`text-xs font-bold ${item.active ? 'text-slate-200' : 'text-red-400 shadow-sm'}`}>{item.status}</p>
+                        <p className={`text-xs font-bold ${
+                          (item as any).disabled ? 'text-slate-400' : 
+                          item.active ? 'text-slate-200' : 'text-red-400 shadow-sm'
+                        }`}>{item.status}</p>
                       </div>
                     </div>
-                    {!item.active && <AlertTriangle size={14} className="text-red-500 animate-bounce" />}
+                    {!item.active && !(item as any).disabled && <AlertTriangle size={14} className="text-red-500 animate-bounce" />}
                   </div>
                 ))}
               </div>

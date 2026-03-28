@@ -1,14 +1,14 @@
-import * as React from 'react';
 import { 
   LayoutDashboard, 
   FileText, 
   BarChart3, 
   UserPlus, 
   LogOut,
-  BrainCircuit
+  BrainCircuit,
+  Files
 } from 'lucide-react';
 
-export type SidebarView = 'DASHBOARD' | 'REPORTS' | 'ANALYTICS' | 'INTERVIEW_FLOW';
+export type SidebarView = 'DASHBOARD' | 'REPORTS' | 'ANALYTICS' | 'INTERVIEW_FLOW' | 'UPLOADED_DOCS';
 
 interface SidebarProps {
   activeView: SidebarView;
@@ -22,6 +22,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeView, onViewChange, onLo
     { id: 'REPORTS' as SidebarView, label: 'Reports', icon: <FileText size={20} /> },
     { id: 'ANALYTICS' as SidebarView, label: 'Analytics', icon: <BarChart3 size={20} /> },
     { id: 'INTERVIEW_FLOW' as SidebarView, label: 'Take Interview', icon: <UserPlus size={20} /> },
+    { id: 'UPLOADED_DOCS' as SidebarView, label: 'Uploaded Documents', icon: <Files size={20} /> },
   ];
 
   return (

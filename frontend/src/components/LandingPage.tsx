@@ -7,31 +7,18 @@ import { PricingSection } from './PricingSection';
 interface LandingPageProps {
   onCandidateLogin: () => void;
   onAdminLogin: () => void;
+  onEnterpriseCTA: () => void;
 }
 
-export const LandingPage: React.FC<LandingPageProps> = ({ onCandidateLogin, onAdminLogin }) => {
+export const LandingPage: React.FC<LandingPageProps> = ({ onCandidateLogin, onAdminLogin, onEnterpriseCTA }) => {
   return (
     <div className="min-h-screen bg-transparent relative overflow-x-hidden selection:bg-indigo-500 selection:text-white transition-colors duration-300">
       {/* Background Orbs */}
-      <div className="absolute inset-0 z-0">
-        <motion.div 
-          animate={{ 
-            scale: [1, 1.2, 1],
-            x: [0, 50, 0],
-            y: [0, -30, 0]
-          }}
-          transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-          style={{ willChange: 'transform' }}
+      <div className="absolute inset-0 z-0 pointer-events-none">
+        <div 
           className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-[radial-gradient(circle,rgba(79,70,229,0.15)_0%,transparent_70%)] rounded-full" 
         />
-        <motion.div 
-          animate={{ 
-            scale: [1, 1.3, 1],
-            x: [0, -40, 0],
-            y: [0, 60, 0]
-          }}
-          transition={{ duration: 18, repeat: Infinity, ease: "linear" }}
-          style={{ willChange: 'transform' }}
+        <div 
           className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-[radial-gradient(circle,rgba(37,99,235,0.15)_0%,transparent_70%)] rounded-full" 
         />
       </div>
@@ -108,10 +95,10 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onCandidateLogin, onAd
           ].map((feature, idx) => (
             <motion.div
               key={idx}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: idx * 0.1 }}
-              viewport={{ once: true }}
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              transition={{ delay: idx * 0.1, duration: 0.5 }}
+              viewport={{ once: true, amount: 0.3 }}
               className="glass-card p-10 rounded-[3rem] flex flex-col items-center text-center"
             >
               <div className="w-12 h-12 rounded-2xl bg-indigo-500/20 flex items-center justify-center mb-6 text-indigo-400">
@@ -125,7 +112,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onCandidateLogin, onAd
       </section>
 
       {/* Pricing Section */}
-      <PricingSection />
+      <PricingSection onEnterpriseCTA={onEnterpriseCTA} />
 
       {/* Footer */}
       <footer className="py-20 border-t border-slate-900/10 dark:border-white/5 relative z-10 bg-slate-50/30 dark:bg-transparent">

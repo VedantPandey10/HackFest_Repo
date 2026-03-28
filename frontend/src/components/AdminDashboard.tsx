@@ -1,7 +1,7 @@
 import * as React from 'react';
 const { useState, useEffect } = React;
 import { StorageService } from '../services/storageService';
-import { InterviewSession, JobPost, Question, RoleSettings, AdminConfig } from '../types';
+import { InterviewSession, JobPost, Question, RoleSettings, AdminConfig, Candidate } from '../types';
 import {
     Users, Settings, LogOut, Search, Shield, Briefcase, Pencil, Plus, Save, Trash2,
     SlidersHorizontal, Activity, ToggleLeft, ToggleRight, Info, AlertTriangle, CheckCircle, XCircle, Eye, Clock, Mail, Phone, CreditCard
@@ -19,7 +19,7 @@ const DEFAULT_SETTINGS: RoleSettings = {
 };
 
 export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
-    const [activeTab, setActiveTab] = useState<'candidates' | 'jobs' | 'config'>('candidates');
+    const [activeTab, setActiveTab] = useState<'candidates' | 'jobs' | 'config' | 'enterprise'>('candidates');
     const [sessions, setSessions] = useState<InterviewSession[]>([]);
     const [jobs, setJobs] = useState<JobPost[]>([]);
     const [config, setConfig] = useState<AdminConfig>(StorageService.getConfig());
@@ -31,6 +31,20 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
 
     const [searchTerm, setSearchTerm] = useState('');
 
+    const [enterpriseRequests, setEnterpriseRequests] = useState<any[]>([]);
+    const [actionLoading, setActionLoading] = useState<number | null>(null);
+
+    // Participant Management state
+    const [allCandidates, setAllCandidates] = useState<Candidate[]>([]);
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+    const [newParticipant, setNewParticipant] = useState({
+        name: '',
+        email: '',
+        position: '',
+        accessId: ''
+    });
+    const [isSavingParticipant, setIsSavingParticipant] = useState(false);
+
     useEffect(() => {
         const fetchData = async () => {
             const data = await StorageService.getSessionsApi();
@@ -38,7 +52,77 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
         };
         fetchData();
         setJobs(StorageService.getJobs());
+        fetchEnterpriseRequests();
+        fetchAllCandidates();
     }, []);
+
+    const fetchAllCandidates = async () => {
+        const data = await StorageService.getAllCandidates();
+        setAllCandidates(data);
+    };
+
+    const fetchEnterpriseRequests = async () => {
+        try {
+            const resp = await fetch('/api/auth/enterprise-requests');
+            if (resp.ok) {
+                const data = await resp.json();
+                setEnterpriseRequests(data);
+            }
+        } catch (err) {
+            console.error('Failed to fetch enterprise requests:', err);
+        }
+    };
+
+    const handleApproveEnterprise = async (id: number) => {
+        setActionLoading(id);
+        try {
+            const resp = await fetch(`/api/auth/enterprise-requests/${id}/approve`, { method: 'PUT' });
+            if (resp.ok) {
+                await fetchEnterpriseRequests();
+            }
+        } catch (err) {
+            console.error('Failed to approve:', err);
+        } finally {
+            setActionLoading(null);
+        }
+    };
+
+    const handleRejectEnterprise = async (id: number) => {
+        if (!confirm('Are you sure you want to reject this enterprise request?')) return;
+        setActionLoading(id);
+        try {
+            const resp = await fetch(`/api/auth/enterprise-requests/${id}/reject`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ notes: 'Rejected by admin' })
+            });
+            if (resp.ok) {
+                await fetchEnterpriseRequests();
+            }
+        } catch (err) {
+            console.error('Failed to reject:', err);
+        } finally {
+            setActionLoading(null);
+        }
+    };
+
+    const handleAddParticipant = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setIsSavingParticipant(true);
+        try {
+            await StorageService.addCandidate(newParticipant);
+            setIsAddModalOpen(false);
+            setNewParticipant({ name: '', email: '', position: '', accessId: '' });
+            await fetchAllCandidates();
+            // Also refresh sessions just in case
+            const sessionsData = await StorageService.getSessionsApi();
+            setSessions(sessionsData);
+        } catch (err: any) {
+            alert(err.message || 'Failed to add participant');
+        } finally {
+            setIsSavingParticipant(false);
+        }
+    };
 
     const handleSaveJob = () => {
         if (editingJob) {
@@ -213,6 +297,15 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
                         className={`w-full flex items-center gap-4 px-5 py-4 rounded-2xl transition-all ${activeTab === 'config' ? 'bg-indigo-600 text-white shadow-xl shadow-indigo-500/20' : 'hover:bg-slate-100 dark:hover:bg-white/5 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'}`}>
                         <Settings size={20} /> <span className="font-bold tracking-tight">Neural Config</span>
                     </button>
+                    <button onClick={() => { setActiveTab('enterprise'); }}
+                        className={`w-full flex items-center gap-4 px-5 py-4 rounded-2xl transition-all ${activeTab === 'enterprise' ? 'bg-indigo-600 text-white shadow-xl shadow-indigo-500/20' : 'hover:bg-slate-100 dark:hover:bg-white/5 text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'}`}>
+                        <Shield size={20} /> <span className="font-bold tracking-tight">Enterprise Requests</span>
+                        {enterpriseRequests.filter(r => r.status === 'Pending').length > 0 && (
+                            <span className="ml-auto bg-amber-500 text-white text-[10px] font-black rounded-full w-5 h-5 flex items-center justify-center">
+                                {enterpriseRequests.filter(r => r.status === 'Pending').length}
+                            </span>
+                        )}
+                    </button>
                 </nav>
 
                 <div className="p-6 border-t border-slate-200 dark:border-white/5 space-y-3 bg-slate-100 dark:bg-white/5">
@@ -240,15 +333,27 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
                         {activeTab === 'candidates' && (selectedSession ? `Report: ${selectedSession.candidate.name}` : 'Node Activity')}
                         {activeTab === 'jobs' && (editingJob ? `Design: ${editingJob.title}` : 'Role Management')}
                         {activeTab === 'config' && 'Global Parameters'}
+                        {activeTab === 'enterprise' && 'Enterprise Requests'}
                     </h2>
 
-                    {/* Back Buttons */}
-                    {selectedSession && activeTab === 'candidates' && (
-                        <button onClick={() => setSelectedSession(null)} className="glass-card px-4 py-2 rounded-xl text-xs font-black text-indigo-400 uppercase tracking-widest hover:text-white transition-all">← Back to Analytics</button>
-                    )}
-                    {selectedJob && !editingJob && activeTab === 'jobs' && (
-                        <button onClick={() => setSelectedJob(null)} className="glass-card px-4 py-2 rounded-xl text-xs font-black text-indigo-400 uppercase tracking-widest hover:text-white transition-all">← Back to Roles</button>
-                    )}
+                    <div className="flex items-center gap-4">
+                        {activeTab === 'candidates' && !selectedSession && (
+                            <button
+                                onClick={() => setIsAddModalOpen(true)}
+                                className="bg-indigo-600 dark:bg-indigo-500 text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 hover:bg-indigo-700 dark:hover:bg-indigo-600 shadow-lg shadow-indigo-500/20 transition-all hover:-translate-y-0.5"
+                            >
+                                <Plus size={18} /> Add Participant
+                            </button>
+                        )}
+
+                        {/* Back Buttons */}
+                        {selectedSession && activeTab === 'candidates' && (
+                            <button onClick={() => setSelectedSession(null)} className="glass-card px-4 py-2 rounded-xl text-xs font-black text-indigo-400 uppercase tracking-widest hover:text-white transition-all">← Back to Analytics</button>
+                        )}
+                        {selectedJob && !editingJob && activeTab === 'jobs' && (
+                            <button onClick={() => setSelectedJob(null)} className="glass-card px-4 py-2 rounded-xl text-xs font-black text-indigo-400 uppercase tracking-widest hover:text-white transition-all">← Back to Roles</button>
+                        )}
+                    </div>
                 </header>
 
                 <div className="flex-1 overflow-y-auto p-8">
@@ -1001,8 +1106,176 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
                         </div>
                     )}
 
+                    {/* --- TAB: ENTERPRISE REQUESTS --- */}
+                    {activeTab === 'enterprise' && (
+                        <div className="space-y-6 animate-fade-in">
+                            {/* Stats Row */}
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm transition-colors">
+                                    <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Total Requests</p>
+                                    <p className="text-2xl font-black text-slate-800 dark:text-white transition-colors">{enterpriseRequests.length}</p>
+                                </div>
+                                <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm transition-colors">
+                                    <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Pending</p>
+                                    <p className="text-2xl font-black text-amber-600 dark:text-amber-400 transition-colors">{enterpriseRequests.filter(r => r.status === 'Pending').length}</p>
+                                </div>
+                                <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm transition-colors">
+                                    <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Approved</p>
+                                    <p className="text-2xl font-black text-emerald-600 dark:text-emerald-500 transition-colors">{enterpriseRequests.filter(r => r.status === 'Approved').length}</p>
+                                </div>
+                                <div className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm transition-colors">
+                                    <p className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest">Rejected</p>
+                                    <p className="text-2xl font-black text-red-600 dark:text-red-500 transition-colors">{enterpriseRequests.filter(r => r.status === 'Rejected').length}</p>
+                                </div>
+                            </div>
+
+                            {/* Table */}
+                            <div className="bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden transition-colors">
+                                <table className="w-full text-left text-sm">
+                                    <thead className="bg-slate-50 dark:bg-slate-800/50 text-slate-500 dark:text-slate-400 uppercase text-xs">
+                                        <tr>
+                                            <th className="px-6 py-4">Company</th>
+                                            <th className="px-6 py-4">Contact</th>
+                                            <th className="px-6 py-4">Email</th>
+                                            <th className="px-6 py-4">Team Size</th>
+                                            <th className="px-6 py-4">Date</th>
+                                            <th className="px-6 py-4">Status</th>
+                                            <th className="px-6 py-4 text-right">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
+                                        {enterpriseRequests.map((req) => (
+                                            <tr key={req.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                                                <td className="px-6 py-4">
+                                                    <div className="flex items-center gap-3">
+                                                        <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold text-xs">
+                                                            {req.companyName.charAt(0)}
+                                                        </div>
+                                                        <span className="font-medium text-slate-800 dark:text-slate-200">{req.companyName}</span>
+                                                    </div>
+                                                </td>
+                                                <td className="px-6 py-4 text-slate-600 dark:text-slate-400">{req.contactName}</td>
+                                                <td className="px-6 py-4 text-slate-500 dark:text-slate-400 text-xs">{req.email}</td>
+                                                <td className="px-6 py-4 text-slate-600 dark:text-slate-400 font-bold">{req.teamSize}</td>
+                                                <td className="px-6 py-4 text-slate-500 dark:text-slate-400 text-xs">{new Date(req.createdAt).toLocaleDateString()}</td>
+                                                <td className="px-6 py-4">
+                                                    <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-1 rounded-full ${
+                                                        req.status === 'Pending' ? 'bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400' :
+                                                        req.status === 'Approved' ? 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' :
+                                                        'bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400'
+                                                    }`}>{req.status}</span>
+                                                </td>
+                                                <td className="px-6 py-4 text-right">
+                                                    {req.status === 'Pending' ? (
+                                                        <div className="flex items-center gap-2 justify-end">
+                                                            <button
+                                                                onClick={() => handleApproveEnterprise(req.id)}
+                                                                disabled={actionLoading === req.id}
+                                                                className="px-3 py-1.5 bg-emerald-600 text-white rounded-lg text-xs font-bold hover:bg-emerald-700 transition-all disabled:opacity-50 flex items-center gap-1"
+                                                            >
+                                                                <CheckCircle size={12} /> Approve
+                                                            </button>
+                                                            <button
+                                                                onClick={() => handleRejectEnterprise(req.id)}
+                                                                disabled={actionLoading === req.id}
+                                                                className="px-3 py-1.5 bg-red-500/10 text-red-600 dark:text-red-400 rounded-lg text-xs font-bold hover:bg-red-500/20 transition-all disabled:opacity-50 flex items-center gap-1"
+                                                            >
+                                                                <XCircle size={12} /> Reject
+                                                            </button>
+                                                        </div>
+                                                    ) : (
+                                                        <span className="text-xs text-slate-400 dark:text-slate-600">
+                                                            {req.reviewedAt ? new Date(req.reviewedAt).toLocaleDateString() : '—'}
+                                                        </span>
+                                                    )}
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </table>
+                                {enterpriseRequests.length === 0 && (
+                                    <div className="p-12 text-center text-slate-400">
+                                        <Shield size={48} className="mx-auto mb-4 opacity-20" />
+                                        <p>No enterprise requests yet.</p>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    )}
                 </div>
             </main>
+
+            {/* Add Participant Modal */}
+            {isAddModalOpen && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                    <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-md" onClick={() => setIsAddModalOpen(false)} />
+                    <div className="relative w-full max-w-md bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-white/10 shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
+                        <div className="p-8">
+                            <div className="flex justify-between items-center mb-6">
+                                <div>
+                                    <h3 className="text-xl font-black text-slate-800 dark:text-white tracking-tight">Manual Entry</h3>
+                                    <p className="text-sm text-slate-500">Provision a new participant node.</p>
+                                </div>
+                                <button onClick={() => setIsAddModalOpen(false)} className="p-2 hover:bg-slate-100 dark:hover:bg-white/5 rounded-full text-slate-400 transition-colors">
+                                    <Plus size={20} className="rotate-45" />
+                                </button>
+                            </div>
+
+                            <form onSubmit={handleAddParticipant} className="space-y-4">
+                                <div>
+                                    <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Full Name</label>
+                                    <input
+                                        required
+                                        className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm focus:ring-2 ring-indigo-500/20 outline-none transition-all text-slate-800 dark:text-white"
+                                        placeholder="e.g. John Doe"
+                                        value={newParticipant.name}
+                                        onChange={e => setNewParticipant({ ...newParticipant, name: e.target.value })}
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Email Address</label>
+                                    <input
+                                        required
+                                        type="email"
+                                        className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm focus:ring-2 ring-indigo-500/20 outline-none transition-all text-slate-800 dark:text-white"
+                                        placeholder="john@example.com"
+                                        value={newParticipant.email}
+                                        onChange={e => setNewParticipant({ ...newParticipant, email: e.target.value })}
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Target Position</label>
+                                    <input
+                                        className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm focus:ring-2 ring-indigo-500/20 outline-none transition-all text-slate-800 dark:text-white"
+                                        placeholder="e.g. UI Designer"
+                                        value={newParticipant.position}
+                                        onChange={e => setNewParticipant({ ...newParticipant, position: e.target.value })}
+                                    />
+                                </div>
+                                <div>
+                                    <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">Unique ID / Access ID</label>
+                                    <input
+                                        className="w-full bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-sm font-mono focus:ring-2 ring-indigo-500/20 outline-none transition-all text-slate-800 dark:text-white"
+                                        placeholder="Auto-generated if blank"
+                                        value={newParticipant.accessId}
+                                        onChange={e => setNewParticipant({ ...newParticipant, accessId: e.target.value.toUpperCase() })}
+                                    />
+                                </div>
+
+                                <div className="pt-4">
+                                    <button
+                                        type="submit"
+                                        disabled={isSavingParticipant}
+                                        className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-4 rounded-2xl shadow-xl shadow-indigo-500/20 transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
+                                    >
+                                        {isSavingParticipant ? 'Provisioning...' : 'Add Participant'}
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

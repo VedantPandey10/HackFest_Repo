@@ -2,14 +2,15 @@
 import * as React from 'react';
 const { useState, useRef, useEffect } = React;
 import { Candidate } from '../types';
-import { User, Mail, Phone, CreditCard, Camera, ShieldCheck, ArrowRight, RefreshCw, XCircle } from 'lucide-react';
+import { User, Mail, Phone, CreditCard, Camera, ShieldCheck, ArrowRight, RefreshCw, XCircle, Files } from 'lucide-react';
 
 interface ProfileSetupProps {
   initialData: Candidate;
   onComplete: (updatedCandidate: Candidate) => void;
+  onViewDocs?: () => void;
 }
 
-export const ProfileSetup: React.FC<ProfileSetupProps> = ({ initialData, onComplete }) => {
+export const ProfileSetup: React.FC<ProfileSetupProps> = ({ initialData, onComplete, onViewDocs }) => {
   const [formData, setFormData] = useState<Candidate>({
     ...initialData,
     email: initialData.email || '',
@@ -136,8 +137,8 @@ export const ProfileSetup: React.FC<ProfileSetupProps> = ({ initialData, onCompl
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!pfpPreview || !idPreview) {
-      alert("Please upload both a Profile Photo and a Government ID to proceed.");
+    if (!pfpPreview) {
+      alert("Please take a Live Selfie to proceed.");
       return;
     }
     setIsSubmitting(true);
@@ -252,10 +253,10 @@ export const ProfileSetup: React.FC<ProfileSetupProps> = ({ initialData, onCompl
                       <input
                         type="email"
                         required
-                        className="w-full pl-12 pr-4 py-3 bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl text-sm focus:border-brand-500 dark:focus:border-brand-400 focus:ring-4 focus:ring-brand-500/5 outline-none transition-all dark:text-white"
+                        readOnly
+                        className="w-full pl-12 pr-4 py-3 bg-brand-50/50 dark:bg-brand-900/10 border border-brand-100/50 dark:border-brand-800/20 rounded-2xl text-sm text-brand-700 dark:text-brand-400 font-medium outline-none"
                         placeholder="you@example.com"
                         value={formData.email}
-                        onChange={e => setFormData({ ...formData, email: e.target.value })}
                       />
                     </div>
                   </div>
@@ -282,26 +283,12 @@ export const ProfileSetup: React.FC<ProfileSetupProps> = ({ initialData, onCompl
                     <h4 className="text-[10px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em]">Verification</h4>
                   </div>
 
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1">Government ID <span className="text-red-500">*</span></label>
-                    <div className="relative group">
-                      <ShieldCheck className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-brand-500 transition-colors" size={16} />
-                      <input
-                        required
-                        className="w-full pl-12 pr-4 py-3 bg-white/50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-2xl text-sm focus:border-brand-500 dark:focus:border-brand-400 focus:ring-4 focus:ring-brand-500/5 outline-none transition-all dark:text-white font-mono tracking-wider"
-                        placeholder="National ID / Passport #"
-                        value={formData.idNumber}
-                        onChange={e => setFormData({ ...formData, idNumber: e.target.value })}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4 pt-2">
+                  <div className="grid grid-cols-1 gap-6 pt-2">
                     {/* Profile Photo Upload / Camera */}
                     <div className="space-y-2">
                       <label className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1">Live Selfie</label>
 
-                      <div className="border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-3xl p-2 text-center hover:bg-brand-50/10 dark:hover:bg-brand-900/5 transition-all relative h-40 flex flex-col justify-center items-center overflow-hidden">
+                      <div className="border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-3xl p-2 text-center hover:bg-brand-50/10 dark:hover:bg-brand-900/5 transition-all relative h-48 flex flex-col justify-center items-center overflow-hidden">
                         {isCameraMode ? (
                           <div className="relative w-full h-full rounded-2xl overflow-hidden bg-black">
                             <video
@@ -385,32 +372,22 @@ export const ProfileSetup: React.FC<ProfileSetupProps> = ({ initialData, onCompl
                       </div>
                     </div>
 
-                    {/* ID Card Upload */}
+                    {/* View Uploaded Documents Option */}
                     <div className="space-y-2">
-                      <label className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1">ID Card View</label>
-                      <div className="border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-3xl p-2 text-center hover:bg-emerald-50/50 dark:hover:bg-emerald-900/10 transition-all relative group h-36 flex flex-col justify-center items-center overflow-hidden">
-                        <input
-                          type="file"
-                          accept="image/*"
-                          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                          onChange={(e) => handleFileChange(e, 'ID')}
-                        />
-                        {idPreview ? (
-                          <div className="relative w-full h-full rounded-2xl overflow-hidden animate-fade-in">
-                            <img src={idPreview} alt="ID" className="w-full h-full object-contain bg-slate-100 dark:bg-slate-800" />
-                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                              <CreditCard className="text-white" size={24} />
-                            </div>
-                          </div>
-                        ) : (
-                          <div className="flex flex-col items-center gap-1 group-hover:scale-110 transition-transform">
-                            <div className="w-12 h-12 rounded-2xl bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
-                              <CreditCard size={24} />
-                            </div>
-                            <p className="text-[10px] font-black text-emerald-700 dark:text-emerald-400 uppercase tracking-widest mt-1">Upload</p>
-                          </div>
-                        )}
-                      </div>
+                      <label className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1">Verification Documents</label>
+                      <button
+                        type="button"
+                        onClick={onViewDocs}
+                        className="w-full h-32 border-2 border-dashed border-emerald-500/30 rounded-3xl group hover:bg-emerald-500/5 transition-all flex flex-col items-center justify-center gap-3"
+                      >
+                        <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center text-emerald-500 group-hover:scale-110 transition-transform">
+                          <Files size={24} />
+                        </div>
+                        <div className="text-center">
+                          <p className="text-[10px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-widest">View Uploaded Documents</p>
+                          <p className="text-[9px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest mt-0.5">Check your registered ID & Photo</p>
+                        </div>
+                      </button>
                     </div>
                   </div>
                 </div>

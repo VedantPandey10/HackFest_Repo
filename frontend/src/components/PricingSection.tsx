@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Check, Zap, Building2, User } from 'lucide-react';
 
-export const PricingSection: React.FC = () => {
+export const PricingSection: React.FC<{ onEnterpriseCTA?: () => void }> = ({ onEnterpriseCTA }) => {
     const plans = [
         {
             name: "Free",
@@ -53,11 +53,10 @@ export const PricingSection: React.FC = () => {
                     {plans.map((plan, idx) => (
                         <motion.div
                             key={plan.name}
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            transition={{ delay: idx * 0.1 }}
-                            viewport={{ once: true }}
-                            style={{ willChange: 'transform' }}
+                            initial={{ opacity: 0 }}
+                            whileInView={{ opacity: 1 }}
+                            transition={{ delay: idx * 0.1, duration: 0.5 }}
+                            viewport={{ once: true, amount: 0.3 }}
                             className={`glass-card p-10 rounded-[3rem] relative flex flex-col ${
                                 plan.popular ? 'border-2 border-indigo-500/50' : ''
                             }`}
@@ -98,6 +97,7 @@ export const PricingSection: React.FC = () => {
                             <motion.button
                                 whileHover={{ scale: 1.02 }}
                                 whileTap={{ scale: 0.98 }}
+                                onClick={plan.popular ? onEnterpriseCTA : undefined}
                                 className={`w-full py-4 rounded-2xl font-black uppercase tracking-widest text-sm transition-all ${
                                     plan.popular 
                                     ? 'bg-indigo-600 text-white shadow-xl shadow-indigo-600/20 hover:bg-indigo-700' 

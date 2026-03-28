@@ -178,6 +178,32 @@ export const StorageService = {
     localStorage.setItem(JOBS_KEY, JSON.stringify(jobs));
   },
 
+  // --- Admin Candidate Management ---
+
+  getAllCandidates: async (): Promise<Candidate[]> => {
+    try {
+      const resp = await fetch('/api/admin/candidates');
+      if (!resp.ok) throw new Error("Failed to fetch candidates");
+      return await resp.json();
+    } catch (e) {
+      console.error("API fetch failed", e);
+      return [];
+    }
+  },
+
+  addCandidate: async (candidateData: { name: string, email: string, position?: string, accessId?: string }) => {
+    const resp = await fetch('/api/admin/candidates', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(candidateData)
+    });
+    if (!resp.ok) {
+      const errorText = await resp.text();
+      throw new Error(errorText || "Failed to add candidate");
+    }
+    return await resp.json();
+  },
+
   getJobById: (id: string): JobPost | undefined => {
     return StorageService.getJobs().find(j => j.id === id);
   },

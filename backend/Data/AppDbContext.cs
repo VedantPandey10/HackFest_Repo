@@ -12,6 +12,7 @@ namespace ReincrewBackend.Data
         public DbSet<EvaluationResult> EvaluationResults { get; set; }
         public DbSet<WarningEvent> WarningEvents { get; set; }
         public DbSet<AdminProfile> AdminProfiles { get; set; }
+        public DbSet<EnterpriseRequest> EnterpriseRequests { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

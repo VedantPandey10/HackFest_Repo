@@ -1,0 +1,97 @@
+@page
+@model AppOwnerPortal.Pages.IndexModel
+@{
+    ViewData["Title"] = "Owner Dashboard";
+}
+
+<div class="max-w-5xl mx-auto px-6 animate-fade-in">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-16">
+        <div>
+            <h1 class="text-5xl font-black tracking-tighter text-slate-900 mb-3 leading-none">Enterprise <span class="shimmer-text">Requests</span></h1>
+            <p class="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400">Platform-wide registration approval queue.</p>
+        </div>
+        <div class="flex gap-3">
+            <div class="glass-panel px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest text-amber-500 flex items-center gap-2">
+                <div class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></div>
+                @Model.Requests.Count(r => r.Status == AppOwnerPortal.Models.EnterpriseStatus.Pending) PENDING
+            </div>
+            <div class="glass-panel px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest text-emerald-500 flex items-center gap-2">
+                <div class="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
+                @Model.Requests.Count(r => r.Status == AppOwnerPortal.Models.EnterpriseStatus.Approved) APPROVED
+            </div>
+        </div>
+    </div>
+
+    @if (!Model.Requests.Any())
+    {
+        <div class="glass-panel p-32 rounded-[3.5rem] text-center border-dashed">
+            <div class="w-16 h-16 bg-slate-50 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <svg class="w-8 h-8 text-slate-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>
+            </div>
+            <p class="text-slate-300 font-black uppercase tracking-[0.3em] text-[10px]">No active registration requests</p>
+        </div>
+    }
+    else
+    {
+        <div class="space-y-6">
+            @foreach (var req in Model.Requests)
+            {
+                <div class="glass-card p-8 rounded-[3rem] flex flex-col lg:flex-row gap-8 items-center relative overflow-hidden group">
+                    <div class="w-20 h-20 bg-white/50 rounded-[2rem] flex items-center justify-center font-black text-3xl text-slate-300 group-hover:text-indigo-600 transition-colors shadow-inner border border-white/20">
+                        @req.CompanyName[0]
+                    </div>
+
+                    <div class="flex-1 text-center lg:text-left">
+                        <div class="flex flex-col lg:flex-row lg:items-center gap-2 lg:gap-4 mb-4">
+                            <h3 class="text-2xl font-black text-slate-900 tracking-tight">@req.CompanyName</h3>
+                            <div class="inline-flex">
+                                <span class="px-3 py-1 rounded-lg text-[8px] font-black uppercase tracking-widest mx-auto lg:mx-0
+                                    @(req.Status == AppOwnerPortal.Models.EnterpriseStatus.Pending ? "bg-amber-100/50 text-amber-600 border border-amber-100" : 
+                                      req.Status == AppOwnerPortal.Models.EnterpriseStatus.Approved ? "bg-emerald-100/50 text-emerald-600 border border-emerald-100" : "bg-red-100/50 text-red-600 border border-red-100")">
+                                    @req.Status
+                                </span>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-[10px] text-slate-400 font-black uppercase tracking-widest">
+                            <div class="flex items-center justify-center lg:justify-start gap-2">
+                                <UserCircle size={14} className="opacity-40" />
+                                @req.ContactName
+                            </div>
+                            <div class="flex items-center justify-center lg:justify-start gap-2 truncate">
+                                <Mail size={14} className="opacity-40" />
+                                @req.Email
+                            </div>
+                            <div class="flex items-center justify-center lg:justify-start gap-2">
+                                <Users size={14} className="opacity-40" />
+                                @req.TeamSize Users
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-3">
+                        @if (req.Status == AppOwnerPortal.Models.EnterpriseStatus.Pending)
+                        {
+                            <form method="post" asp-page-handler="Approve" asp-route-id="@req.Id">
+                                <button type="submit" class="h-12 px-8 bg-indigo-600 text-white font-black rounded-xl text-[9px] uppercase tracking-widest hover:bg-indigo-700 shadow-lg shadow-indigo-600/20 transition-all hover:-translate-y-0.5 active:translate-y-0">
+                                    Approve Access
+                                </button>
+                            </form>
+                            <form method="post" asp-page-handler="Reject" asp-route-id="@req.Id">
+                                <button type="submit" class="h-12 px-6 bg-slate-50 text-slate-400 font-black rounded-xl text-[9px] uppercase tracking-widest hover:bg-red-50 hover:text-red-500 transition-all">
+                                    Reject
+                                </button>
+                            </form>
+                        }
+                        else
+                        {
+                            <div class="text-center lg:text-right px-4">
+                                <p class="text-[8px] font-black uppercase tracking-widest text-slate-300 mb-1">Reviewed At</p>
+                                <p class="text-xs font-black text-slate-800 tracking-tight">@req.ReviewedAt?.ToString("MMM dd, yyyy")</p>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

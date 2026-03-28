@@ -10,9 +10,20 @@ interface CameraMonitorProps {
   isLocked: boolean;
   onStreamReady?: () => void;
   sensitivity?: 'Low' | 'Medium' | 'High';
+  proctoringSettings?: {
+    eyeTracking: boolean;
+    multiFace: boolean;
+  };
 }
 
-export const CameraMonitor: React.FC<CameraMonitorProps> = ({ onWarning, onMetricsUpdate, isLocked, onStreamReady, sensitivity = 'Medium' }) => {
+export const CameraMonitor: React.FC<CameraMonitorProps> = ({ 
+  onWarning, 
+  onMetricsUpdate, 
+  isLocked, 
+  onStreamReady, 
+  sensitivity = 'Medium',
+  proctoringSettings 
+}) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isInitialized, setIsInitialized] = useState(false);
   const [warnings, setWarnings] = useState(0);
@@ -150,7 +161,7 @@ export const CameraMonitor: React.FC<CameraMonitorProps> = ({ onWarning, onMetri
     // 1. Multiple Faces Check (Collaboration)
     if (result.faceLandmarks.length > 1) {
       multipleFacesFramesRef.current += 1;
-      if (multipleFacesFramesRef.current > 10) {
+      if (multipleFacesFramesRef.current > 10 && proctoringSettings?.multiFace !== false) {
         setStatus("WARNING");
         attemptTriggerWarning("Collaboration detected! Multiple faces in frame.");
       }
@@ -185,7 +196,7 @@ export const CameraMonitor: React.FC<CameraMonitorProps> = ({ onWarning, onMetri
 
     const isLookingLeft = noseRelX < 0.35;
     const isLookingRight = noseRelX > 0.65;
-    const isLookingAway = isLookingLeft || isLookingRight;
+    const isLookingAway = (isLookingLeft || isLookingRight) && proctoringSettings?.eyeTracking !== false;
 
     if (isLookingAway) {
       lookingAwayFramesRef.current += 1;
@@ -241,7 +252,8 @@ export const CameraMonitor: React.FC<CameraMonitorProps> = ({ onWarning, onMetri
     }
 
     // ─── 7. Phone Use Detection (Composite) ───────────────────
-    const suspectedPhoneUse = isHeadDown && isEyesLookingDown;
+    const isEyeTrackingEnabled = proctoringSettings?.eyeTracking !== false;
+    const suspectedPhoneUse = isHeadDown && isEyesLookingDown && isEyeTrackingEnabled;
 
     if (suspectedPhoneUse) {
       phoneUseFramesRef.current += 1;
@@ -254,7 +266,7 @@ export const CameraMonitor: React.FC<CameraMonitorProps> = ({ onWarning, onMetri
       phoneUseFramesRef.current = Math.max(0, phoneUseFramesRef.current - 1);
     }
 
-    if (isHeadDown && !suspectedPhoneUse) {
+    if (isHeadDown && !suspectedPhoneUse && isEyeTrackingEnabled) {
       lookingDownFramesRef.current += 1;
       if (lookingDownFramesRef.current > 20) {
         setStatus("WARNING");
@@ -309,13 +321,13 @@ export const CameraMonitor: React.FC<CameraMonitorProps> = ({ onWarning, onMetri
 
     onMetricsUpdate({
       isPresent: true,
-      isLookingAtCamera: !isLookingAway,
+      isLookingAtCamera: isEyeTrackingEnabled ? !isLookingAway : true,
       currentExpression: expression,
       confidenceLevel: avgConfidence,
-      headPose,
-      isLookingDown: isHeadDown || isEyesLookingDown,
+      headPose: isEyeTrackingEnabled ? headPose : 'FORWARD',
+      isLookingDown: isEyeTrackingEnabled ? (isHeadDown || isEyesLookingDown) : false,
       isTalking,
-      suspectedPhoneUse,
+      suspectedPhoneUse: isEyeTrackingEnabled ? suspectedPhoneUse : false,
       suspicionLevel: avgSuspicion,
     });
   };

@@ -25,19 +25,70 @@ export const startInterview = async (candidate: Candidate): Promise<{ question: 
   if (candidate.jobPostId) {
     const job = StorageService.getJobById(candidate.jobPostId);
     if (job) {
-      questions = job.questions;
+      questions = [...job.questions];
       settings = job.settings;
     }
   }
 
-  // Fallback to a default question if no job found or no questions
+  // Generate a resume-based question if resume text exists
+  if (candidate.resumeText) {
+    try {
+      const resumePrompt = `
+        You are an expert technical recruiter. Based on the following candidate resume, generate ONE insightful interview question that probes their specific experience or a project mentioned.
+        
+        RESUME CONTENT:
+        ${candidate.resumeText.substring(0, 2000)}
+        
+        INSTRUCTIONS:
+        1. The question should be professional and technical.
+        2. Provide a brief Reference Answer (what a good answer looks like).
+        3. Provide 3-4 Key Points that should be covered.
+        
+        Return strict JSON.
+      `;
+
+      const response = await getAI().models.generateContent({
+        model: MODEL_FAST,
+        contents: resumePrompt,
+        config: {
+          responseMimeType: "application/json",
+          responseSchema: {
+            type: Type.OBJECT,
+            properties: {
+              question: { type: Type.STRING },
+              referenceAnswer: { type: Type.STRING },
+              keyPoints: { type: Type.ARRAY, items: { type: Type.STRING } }
+            }
+          }
+        }
+      });
+
+      const data = JSON.parse(response.text || "{}");
+      if (data.question) {
+        const resumeQuestion: Question = {
+          id: 888, // Special ID for resume questions
+          text: data.question,
+          difficulty: "Medium",
+          referenceAnswer: data.referenceAnswer,
+          keyPoints: data.keyPoints,
+          maxScore: 10
+        };
+        // Inject at the beginning
+        questions.unshift(resumeQuestion);
+      }
+    } catch (err) {
+      console.error("Failed to generate resume question:", err);
+    }
+  }
+
+  // Fallback to a default question if no questions
   if (questions.length === 0) {
     questions = [{
       id: 999,
       text: "Tell me about your professional background and what you are looking for in your next role.",
       difficulty: "Easy",
-      referenceAnswer: "Candidate should clearly state their current role, years of experience, and key skills. They should mention career goals that align with professional growth.",
-      keyPoints: ["Current Role", "Years of Experience", "Key Skills", "Career Goals"],
+      referenceAnswer: "Candidate should clearly state their current role, years of experience, and key skills.",
+      keyPoints: ["Current Role", "Years of Experience", "Key Skills"],
       maxScore: 10
     }];
   }

@@ -13,6 +13,8 @@ import { ProfileSetup } from './components/ProfileSetup';
 import { CameraCheckScreen } from './components/CameraCheckScreen';
 import { InterviewScreen } from './components/InterviewScreen';
 import { SummaryScreen } from './components/SummaryScreen';
+import { EnterpriseRegistrationModal } from './components/EnterpriseRegistrationModal';
+import { UploadedDocuments } from './components/UploadedDocuments';
 import { Candidate, EvaluationResult, WarningEvent } from './types';
 import { StorageService } from './services/storageService';
 import { useTheme } from './context/ThemeContext';
@@ -26,6 +28,7 @@ enum AppView {
 export default function App() {
   const [view, setView] = useState<AppView>(AppView.LANDING);
   const [showAuthModal, setShowAuthModal] = useState<AuthMode | null>(null);
+  const [showEnterpriseModal, setShowEnterpriseModal] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
   
@@ -37,6 +40,12 @@ export default function App() {
   const [sessionScore, setSessionScore] = useState<number>(0);
   const { theme } = useTheme();
 
+  const [proctoringSettings, setProctoringSettings] = useState({
+    eyeTracking: true,
+    multiFace: true,
+    tabSwitching: true
+  });
+
   const handleAuthSuccess = (role: 'ADMIN' | 'CANDIDATE', data: any) => {
     if (role === 'ADMIN') {
       setIsAdminAuthenticated(true);
@@ -46,7 +55,10 @@ export default function App() {
           id: data.candidateId,
           name: data.name,
           email: data.email,
-          position: data.position
+          position: data.position,
+          passwordHash: 'SHA256:7B9A2C...F310',
+          plan: 'Professional Node',
+          proctoringSettings: { ...proctoringSettings }
       } as any);
       setIsAuthenticated(true);
       setView(AppView.AUTHENTICATED);
@@ -55,26 +67,33 @@ export default function App() {
     setShowAuthModal(null);
   };
 
+  // Sync candidate proctoring settings when root state changes
+  useEffect(() => {
+    if (candidate) {
+      setCandidate(prev => prev ? { ...prev, proctoringSettings } : null);
+    }
+  }, [proctoringSettings]);
+
   const handleInterviewComplete = (finalResults: EvaluationResult[], warnings: WarningEvent[], status: 'COMPLETED' | 'TERMINATED') => {
     setResults(finalResults);
-    // ... logic for score calculation ...
     setSessionScore(85); // Placeholder for now
     setInterviewStep('SUMMARY');
   };
 
-  const handleRestart = (shouldLogout: boolean = false) => {
-    if (shouldLogout) {
-      setCandidate(null);
+  const handleRestart = (fullReset: boolean) => {
+    if (fullReset) {
       setIsAuthenticated(false);
-      setView(AppView.LANDING);
-    } else {
-      setInterviewStep('IDLE');
+      setCandidate(null);
+      setResults([]);
+      setSessionScore(0);
       setSidebarView('DASHBOARD');
+      setInterviewStep('PROFILE_SETUP');
     }
+    setView(AppView.LANDING);
   };
 
   return (
-    <div className="h-screen w-screen flex flex-col overflow-x-hidden overflow-y-auto font-sans transition-colors duration-300 bg-bg-main text-text-main">
+    <div className="min-h-screen w-full flex flex-col font-sans transition-colors duration-300 bg-bg-main text-text-main">
       <AnimatePresence mode="wait">
         {view === AppView.LANDING && (
           <motion.div 
@@ -82,16 +101,17 @@ export default function App() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="h-full w-full"
+            className="min-h-screen w-full"
           >
             <LandingPage 
               onCandidateLogin={() => setShowAuthModal('CANDIDATE_LOGIN')}
               onAdminLogin={() => setShowAuthModal('ADMIN_LOGIN')}
+              onEnterpriseCTA={() => setShowEnterpriseModal(true)}
             />
           </motion.div>
         )}
 
-        {view === AppView.AUTHENTICATED && isAuthenticated && (
+        {view === AppView.AUTHENTICATED && isAuthenticated && candidate && (
           <motion.div 
             key="app"
             initial={{ opacity: 0, x: 20 }}
@@ -106,18 +126,26 @@ export default function App() {
                 if (v === 'INTERVIEW_FLOW') setInterviewStep('PROFILE_SETUP');
               }}
               onLogout={() => handleRestart(true)}
-              userName={candidate?.name}
+              candidate={candidate}
+              onProctoringSettingsChange={setProctoringSettings}
             >
               <div className="h-full w-full overflow-y-auto">
                 {sidebarView === 'DASHBOARD' && <UserDashboard candidateId={candidate?.id as any} />}
                 {sidebarView === 'REPORTS' && <ReportsScreen candidateId={candidate?.id as any} />}
                 {sidebarView === 'ANALYTICS' && <AnalyticsScreen candidateId={candidate?.id as any} />}
+                {sidebarView === 'UPLOADED_DOCS' && (
+                  <UploadedDocuments 
+                    candidate={candidate} 
+                    onUpdateCandidate={setCandidate}
+                  />
+                )}
                 {sidebarView === 'INTERVIEW_FLOW' && (
                   <div className="h-full p-6">
                     {interviewStep === 'PROFILE_SETUP' && candidate && (
                       <ProfileSetup
                         initialData={candidate}
                         onComplete={(c) => { setCandidate(c); setInterviewStep('CAMERA_CHECK'); }}
+                        onViewDocs={() => setSidebarView('UPLOADED_DOCS')}
                       />
                     )}
                     {interviewStep === 'CAMERA_CHECK' && (
@@ -161,6 +189,19 @@ export default function App() {
             initialMode={showAuthModal}
             onClose={() => setShowAuthModal(null)}
             onSuccess={handleAuthSuccess}
+            onAdminRegistrationRedirect={() => {
+              setShowAuthModal(null);
+              setShowEnterpriseModal(true);
+            }}
+          />
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {showEnterpriseModal && (
+          <EnterpriseRegistrationModal
+            key="enterprise-modal"
+            onClose={() => setShowEnterpriseModal(false)}
           />
         )}
       </AnimatePresence>

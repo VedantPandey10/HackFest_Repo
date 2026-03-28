@@ -46,7 +46,7 @@ namespace ReincrewBackend.Controllers
                 if (candidate == null || !VerifyPassword(dto.Password, candidate.PasswordHash))
                     return Unauthorized("Invalid credentials.");
 
-                return Ok(new { token = "dummy-candidate-token", candidateId = candidate.Id, name = candidate.Name });
+                return Ok(new { token = "dummy-candidate-token", candidateId = candidate.Id, name = candidate.Name, email = candidate.Email });
             }
             catch (Exception ex)
             {
@@ -57,6 +57,15 @@ namespace ReincrewBackend.Controllers
         [HttpPost("register/admin")]
         public async Task<IActionResult> RegisterAdmin([FromBody] AdminRegistrationDto dto)
         {
+            // Check if there's an approved enterprise request for this email
+            var enterpriseApproved = await _context.EnterpriseRequests.AnyAsync(er =>
+                er.Email == dto.Email && er.Status == EnterpriseStatus.Approved);
+
+            if (!enterpriseApproved)
+            {
+                return BadRequest("Admin registration is restricted to verified enterprise partners. Please purchase an enterprise package and wait for app owner verification.");
+            }
+
             if (await _context.AdminProfiles.AnyAsync(a => a.Username == dto.Username || a.Email == dto.Email))
                 return BadRequest("Username or Email already exists.");
 
@@ -81,6 +90,97 @@ namespace ReincrewBackend.Controllers
                 return Unauthorized("Invalid credentials.");
 
             return Ok(new { token = "dummy-admin-token", name = admin.Username });
+        }
+
+        // --- Enterprise Registration Endpoints ---
+
+        [HttpPost("register/enterprise")]
+        public async Task<IActionResult> RegisterEnterprise([FromBody] EnterpriseRegistrationDto dto)
+        {
+            if (await _context.EnterpriseRequests.AnyAsync(e => e.Email == dto.Email && e.Status != EnterpriseStatus.Rejected))
+                return BadRequest("A request with this email already exists.");
+
+            if (await _context.AdminProfiles.AnyAsync(a => a.Email == dto.Email))
+                return BadRequest("An account with this email already exists.");
+
+            var request = new EnterpriseRequest
+            {
+                CompanyName = dto.CompanyName,
+                ContactName = dto.ContactName,
+                Email = dto.Email,
+                Phone = dto.Phone,
+                TeamSize = dto.TeamSize,
+                PasswordHash = HashPassword(dto.Password),
+                Status = EnterpriseStatus.Pending
+            };
+
+            _context.EnterpriseRequests.Add(request);
+            await _context.SaveChangesAsync();
+            return Ok(new { message = "Enterprise request submitted. You will be notified once reviewed." });
+        }
+
+        [HttpGet("enterprise-requests")]
+        public async Task<IActionResult> GetEnterpriseRequests()
+        {
+            var requests = await _context.EnterpriseRequests
+                .OrderByDescending(e => e.CreatedAt)
+                .Select(e => new
+                {
+                    e.Id,
+                    e.CompanyName,
+                    e.ContactName,
+                    e.Email,
+                    e.Phone,
+                    e.TeamSize,
+                    status = e.Status.ToString(),
+                    e.CreatedAt,
+                    e.ReviewedAt,
+                    e.ReviewNotes
+                })
+                .ToListAsync();
+
+            return Ok(requests);
+        }
+
+        [HttpPut("enterprise-requests/{id}/approve")]
+        public async Task<IActionResult> ApproveEnterprise(int id)
+        {
+            var request = await _context.EnterpriseRequests.FindAsync(id);
+            if (request == null) return NotFound("Request not found.");
+            if (request.Status != EnterpriseStatus.Pending) return BadRequest("Request already reviewed.");
+
+            request.Status = EnterpriseStatus.Approved;
+            request.ReviewedAt = DateTime.UtcNow;
+
+            // Create an admin account for the approved enterprise
+            if (!await _context.AdminProfiles.AnyAsync(a => a.Email == request.Email))
+            {
+                var admin = new AdminProfile
+                {
+                    Username = request.CompanyName,
+                    Email = request.Email,
+                    PasswordHash = request.PasswordHash
+                };
+                _context.AdminProfiles.Add(admin);
+            }
+
+            await _context.SaveChangesAsync();
+            return Ok(new { message = "Enterprise request approved. Account created." });
+        }
+
+        [HttpPut("enterprise-requests/{id}/reject")]
+        public async Task<IActionResult> RejectEnterprise(int id, [FromBody] RejectDto? dto = null)
+        {
+            var request = await _context.EnterpriseRequests.FindAsync(id);
+            if (request == null) return NotFound("Request not found.");
+            if (request.Status != EnterpriseStatus.Pending) return BadRequest("Request already reviewed.");
+
+            request.Status = EnterpriseStatus.Rejected;
+            request.ReviewedAt = DateTime.UtcNow;
+            request.ReviewNotes = dto?.Notes;
+
+            await _context.SaveChangesAsync();
+            return Ok(new { message = "Enterprise request rejected." });
         }
 
         private string HashPassword(string password)
@@ -115,5 +215,20 @@ namespace ReincrewBackend.Controllers
     {
         public string Email { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
+    }
+
+    public class EnterpriseRegistrationDto
+    {
+        public string CompanyName { get; set; } = string.Empty;
+        public string ContactName { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string? Phone { get; set; }
+        public int TeamSize { get; set; }
+        public string Password { get; set; } = string.Empty;
+    }
+
+    public class RejectDto
+    {
+        public string? Notes { get; set; }
     }
 }

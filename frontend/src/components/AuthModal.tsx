@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, User, Mail, Lock, ArrowRight, ShieldCheck, UserPlus, LogIn, ChevronDown } from 'lucide-react';
 import { StorageService } from '../services/storageService';
 import { JobPost } from '../types';
+import { PasswordInput } from './PasswordInput';
 
 export type AuthMode = 'CANDIDATE_LOGIN' | 'CANDIDATE_REGISTER' | 'ADMIN_LOGIN' | 'ADMIN_REGISTER';
 
@@ -10,9 +11,10 @@ interface AuthModalProps {
   initialMode: AuthMode;
   onClose: () => void;
   onSuccess: (role: 'ADMIN' | 'CANDIDATE', data: any) => void;
+  onAdminRegistrationRedirect?: () => void;
 }
 
-export const AuthModal: React.FC<AuthModalProps> = ({ initialMode, onClose, onSuccess }) => {
+export const AuthModal: React.FC<AuthModalProps> = ({ initialMode, onClose, onSuccess, onAdminRegistrationRedirect }) => {
   const [mode, setMode] = React.useState<AuthMode>(initialMode);
   const [formData, setFormData] = React.useState({
     name: '',
@@ -98,10 +100,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({ initialMode, onClose, onSu
         className="glass-panel w-full max-w-md rounded-[3rem] overflow-hidden bg-bg-main dark:bg-surface-panel"
       >
         {/* Header */}
-        <div className="p-10 pb-6 text-center relative">
+        <div className="px-6 pt-10 pb-6 text-center relative">
           <button 
             onClick={onClose}
-            className="absolute top-8 right-8 text-slate-400 hover:text-slate-600 dark:hover:text-white transition-colors"
+            className="absolute top-8 right-6 text-slate-400 hover:text-slate-600 dark:hover:text-white transition-colors"
           >
             <X size={20} />
           </button>
@@ -122,7 +124,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ initialMode, onClose, onSu
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="px-8 pb-10 flex flex-col items-center space-y-6">
+        <form onSubmit={handleSubmit} className="px-6 pb-10 flex flex-col items-center space-y-6">
           {error && (
             <div className="w-full bg-red-500/10 border border-red-500/20 p-4 rounded-2xl text-[10px] font-bold uppercase tracking-widest text-red-400 text-center">
               {error}
@@ -192,13 +194,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({ initialMode, onClose, onSu
               </div>
             )}
 
-            <input 
-              type="password"
-              placeholder="Password"
-              required
-              className="w-full h-14 bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl px-6 text-sm outline-none focus:border-indigo-500 text-slate-900 dark:text-white transition-all font-medium"
+            <PasswordInput 
               value={formData.password}
-              onChange={e => setFormData({ ...formData, password: e.target.value })}
+              onChange={val => setFormData({ ...formData, password: val })}
+              placeholder="Password"
             />
           </div>
 
@@ -239,7 +238,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ initialMode, onClose, onSu
             {mode === 'ADMIN_LOGIN' && (
               <button 
                 type="button" 
-                onClick={() => setMode('ADMIN_REGISTER')}
+                onClick={onAdminRegistrationRedirect || (() => setMode('ADMIN_REGISTER'))}
                 className="text-[10px] font-black uppercase tracking-widest text-indigo-400 hover:text-white transition-colors"
               >
                 Register as new admin
