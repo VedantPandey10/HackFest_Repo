@@ -16,13 +16,13 @@ interface CameraMonitorProps {
   };
 }
 
-export const CameraMonitor: React.FC<CameraMonitorProps> = ({ 
-  onWarning, 
-  onMetricsUpdate, 
-  isLocked, 
-  onStreamReady, 
+export const CameraMonitor: React.FC<CameraMonitorProps> = ({
+  onWarning,
+  onMetricsUpdate,
+  isLocked,
+  onStreamReady,
   sensitivity = 'Medium',
-  proctoringSettings 
+  proctoringSettings
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isInitialized, setIsInitialized] = useState(false);
