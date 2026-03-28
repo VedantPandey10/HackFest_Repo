@@ -77,7 +77,7 @@ export const PricingSection: React.FC<{ onEnterpriseCTA?: () => void }> = ({ onE
 
                             <div className="mb-8">
                                 <span className="text-5xl font-black text-text-main">
-                                    {plan.price === "Custom" ? "" : "$"}
+                                    {plan.price === "Custom" ? "" : "₹"}
                                     {plan.price}
                                 </span>
                                 {plan.price !== "Custom" && <span className="text-text-muted ml-2 font-bold uppercase tracking-widest text-xs">/ Month</span>}

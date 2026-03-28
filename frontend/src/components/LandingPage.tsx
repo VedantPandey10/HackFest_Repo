@@ -30,7 +30,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onCandidateLogin, onAd
           <div className="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-600/20">
             <BrainCircuit className="text-white" size={24} />
           </div>
-          <span className="text-xl font-black tracking-tighter text-slate-900 dark:text-white">REICREW<span className="text-indigo-500">.AI</span></span>
+          <span className="text-xl font-black tracking-tighter text-slate-900 dark:text-white">REINCREW<span className="text-indigo-500">.AI</span></span>
         </div>
         <div className="flex items-center gap-6">
           <ThemeToggle />
@@ -67,7 +67,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onCandidateLogin, onAd
           </h1>
           
           <p className="text-lg md:text-xl text-text-main/80 dark:text-slate-400 max-w-2xl mx-auto mb-12 font-medium">
-            Deploy advanced behavioral analysis to discover top talent. Reicrew.AI is the neural nexus for modern recruitment.
+            Deploy advanced behavioral analysis to discover top talent. Reicrew.AI is the neural core for modern recruitment.
           </p>
 
           <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">

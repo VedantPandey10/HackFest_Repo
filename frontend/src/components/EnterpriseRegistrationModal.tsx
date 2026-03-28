@@ -83,7 +83,7 @@ export const EnterpriseRegistrationModal: React.FC<EnterpriseRegistrationModalPr
             <motion.div
                 initial={{ scale: 0.9, y: 20 }}
                 animate={{ scale: 1, y: 0 }}
-                className="glass-panel w-full max-w-lg rounded-[3rem] overflow-hidden bg-bg-main dark:bg-surface-panel max-h-[90vh] overflow-y-auto"
+                className="glass-panel w-full max-w-lg rounded-[3rem] overflow-hidden bg-bg-main dark:bg-surface-panel max-h-[90vh] overflow-y-auto [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
             >
                 {/* Header */}
                 <div className="px-6 pt-10 pb-6 text-center relative">
@@ -164,7 +164,7 @@ export const EnterpriseRegistrationModal: React.FC<EnterpriseRegistrationModalPr
 
                                 <button
                                     onClick={() => setStep('REGISTRATION')}
-                                    className="w-full min-h-[4rem] px-8 bg-indigo-600 hover:bg-indigo-700 text-white font-black rounded-[2rem] shadow-xl shadow-indigo-600/20 transition-all flex items-center justify-center gap-4"
+                                    className="w-fit mx-auto min-h-[4rem] px-12 bg-indigo-600 hover:bg-indigo-700 text-white font-black rounded-[2rem] shadow-xl shadow-indigo-600/20 transition-all flex items-center justify-center gap-4"
                                 >
                                     <span className="text-sm uppercase tracking-widest">Continue to Registration</span>
                                     <ArrowRight size={20} strokeWidth={3} />

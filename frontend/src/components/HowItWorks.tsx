@@ -1,11 +1,11 @@
 import * as React from 'react';
 import { motion } from 'framer-motion';
-import { 
-  CheckCircle2, 
-  ArrowLeft, 
-  UserPlus, 
-  Camera, 
-  BrainCircuit, 
+import {
+  CheckCircle2,
+  ArrowLeft,
+  UserPlus,
+  Camera,
+  BrainCircuit,
   LineChart,
   Zap,
   ShieldCheck,
@@ -58,13 +58,13 @@ export const HowItWorks: React.FC<HowItWorksProps> = ({ onBack }) => {
           <div className="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-600/20">
             <BrainCircuit className="text-white" size={24} />
           </div>
-          <span className="text-xl font-black tracking-tighter">REICREW<span className="text-indigo-500">.AI</span></span>
+          <span className="text-xl font-black tracking-tighter uppercase italic">REIN<span className="text-indigo-500">CREW.AI</span></span>
         </div>
-        <button 
+        <button
           onClick={onBack}
           className="flex items-center gap-3 px-6 py-2.5 bg-white/5 border border-white/10 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-all"
         >
-          <ArrowLeft size={14} /> Back to Nexus
+          <ArrowLeft size={14} /> Back to Portal
         </button>
       </nav>
 
@@ -125,7 +125,7 @@ export const HowItWorks: React.FC<HowItWorksProps> = ({ onBack }) => {
               <p className="text-indigo-100 text-lg mb-10 font-medium">
                 Our platform employs military-grade proctoring and behavioral verification to ensure every assessment is fair, focused, and foolproof.
               </p>
-              <button 
+              <button
                 onClick={onBack}
                 className="px-10 py-5 bg-white text-indigo-600 rounded-[2rem] font-black text-lg flex items-center gap-4 hover:bg-slate-50 transition-all shadow-xl"
               >
@@ -144,7 +144,7 @@ export const HowItWorks: React.FC<HowItWorksProps> = ({ onBack }) => {
             </div>
             <span className="text-sm font-black tracking-tighter uppercase">Reicrew Intelligence Node</span>
           </div>
-          <p className="text-[10px] font-black text-text-muted uppercase tracking-[0.4em]">© 2024 REICREW.AI • ALL PROTOCOLS RESERVED</p>
+          <p className="text-[10px] font-black text-text-muted uppercase tracking-[0.4em]">© 2024 REINCREW.AI • ALL PROTOCOLS RESERVED</p>
         </div>
       </footer>
     </div>

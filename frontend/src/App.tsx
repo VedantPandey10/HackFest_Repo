@@ -2,6 +2,7 @@ import * as React from 'react';
 const { useState, useEffect } = React;
 import { motion, AnimatePresence } from 'framer-motion';
 import { LandingPage } from './components/LandingPage';
+import { HomePage } from './components/HomePage';
 import { HowItWorks } from './components/HowItWorks';
 import { AuthModal, AuthMode } from './components/AuthModal';
 import { AdminDashboard } from './components/AdminDashboard';
@@ -21,6 +22,7 @@ import { StorageService } from './services/storageService';
 import { useTheme } from './context/ThemeContext';
 
 enum AppView {
+  HOME,
   LANDING,
   LEARN_HOW_IT_WORKS,
   AUTHENTICATED,
@@ -28,13 +30,45 @@ enum AppView {
 }
 
 export default function App() {
-  const [view, setView] = useState<AppView>(AppView.LANDING);
+  const [view, setView] = useState<AppView>(AppView.HOME);
+  const [sidebarView, setSidebarView] = useState<SidebarView>('DASHBOARD');
+  
+  // Custom navigation wrapper to sync with browser history
+  const navigateTo = React.useCallback((newView: AppView, newSidebarView?: SidebarView) => {
+    const nextSidebarView = newSidebarView || sidebarView;
+    if (newView !== view || nextSidebarView !== sidebarView) {
+      window.history.pushState({ appView: newView, sidebarView: nextSidebarView }, '', '');
+      setView(newView);
+      if (newSidebarView) setSidebarView(newSidebarView);
+    }
+  }, [view, sidebarView]);
+
+  // Sync initial state and listen for back/forward buttons
+  useEffect(() => {
+    // Initialize history state on first mount
+    if (window.history.state === null) {
+      window.history.replaceState({ appView: AppView.HOME, sidebarView: 'DASHBOARD' }, '', '');
+    }
+
+    const handlePopState = (event: PopStateEvent) => {
+      if (event.state) {
+        if (typeof event.state.appView !== 'undefined') {
+          setView(event.state.appView as AppView);
+        }
+        if (typeof event.state.sidebarView !== 'undefined') {
+          setSidebarView(event.state.sidebarView as SidebarView);
+        }
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
   const [showAuthModal, setShowAuthModal] = useState<AuthMode | null>(null);
   const [showEnterpriseModal, setShowEnterpriseModal] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
   
-  const [sidebarView, setSidebarView] = useState<SidebarView>('DASHBOARD');
   const [interviewStep, setInterviewStep] = useState<'IDLE' | 'PROFILE_SETUP' | 'CAMERA_CHECK' | 'INTERVIEW' | 'SUMMARY'>('IDLE');
   
   const [candidate, setCandidate] = useState<Candidate | null>(null);
@@ -97,6 +131,20 @@ export default function App() {
   return (
     <div className="min-h-screen w-full flex flex-col font-sans transition-colors duration-300 bg-bg-main text-text-main">
       <AnimatePresence mode="wait">
+        {view === AppView.HOME && (
+          <motion.div 
+            key="home"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="min-h-screen w-full"
+          >
+            <HomePage 
+              onGoToLanding={() => navigateTo(AppView.LANDING)} 
+              onEnterpriseCTA={() => setShowEnterpriseModal(true)}
+            />
+          </motion.div>
+        )}
         {view === AppView.LANDING && (
           <motion.div 
             key="landing"
@@ -109,7 +157,7 @@ export default function App() {
               onCandidateLogin={() => setShowAuthModal('CANDIDATE_LOGIN')}
               onAdminLogin={() => setShowAuthModal('ADMIN_LOGIN')}
               onEnterpriseCTA={() => setShowEnterpriseModal(true)}
-              onLearnMore={() => setView(AppView.LEARN_HOW_IT_WORKS)}
+              onLearnMore={() => navigateTo(AppView.LEARN_HOW_IT_WORKS)}
             />
           </motion.div>
         )}
@@ -122,7 +170,7 @@ export default function App() {
             exit={{ opacity: 0, y: -20 }}
             className="min-h-screen w-full"
           >
-            <HowItWorks onBack={() => setView(AppView.LANDING)} />
+            <HowItWorks onBack={() => navigateTo(AppView.LANDING)} />
           </motion.div>
         )}
 
@@ -137,7 +185,7 @@ export default function App() {
             <MainLayout
               activeView={sidebarView}
               onViewChange={(v) => {
-                setSidebarView(v);
+                navigateTo(AppView.AUTHENTICATED, v);
                 if (v === 'INTERVIEW_FLOW') setInterviewStep('PROFILE_SETUP');
               }}
               onLogout={() => handleRestart(true)}
@@ -192,7 +240,7 @@ export default function App() {
             exit={{ opacity: 0 }}
             className="h-full w-full"
           >
-            <AdminDashboard onLogout={() => { setIsAdminAuthenticated(false); setView(AppView.LANDING); }} />
+            <AdminDashboard onLogout={() => { setIsAdminAuthenticated(false); navigateTo(AppView.LANDING); }} />
           </motion.div>
         )}
       </AnimatePresence>

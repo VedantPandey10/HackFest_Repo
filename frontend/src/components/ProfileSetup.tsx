@@ -79,6 +79,9 @@ export const ProfileSetup: React.FC<ProfileSetupProps> = ({ initialData, onCompl
       canvas.height = videoRef.current.videoHeight;
       const ctx = canvas.getContext('2d');
       if (ctx) {
+        // Mirror the canvas to match the preview
+        ctx.translate(canvas.width, 0);
+        ctx.scale(-1, 1);
         ctx.drawImage(videoRef.current, 0, 0);
         const dataUrl = canvas.toDataURL('image/jpeg', 0.8);
         setPfpPreview(dataUrl);

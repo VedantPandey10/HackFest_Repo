@@ -19,6 +19,9 @@ export default defineConfig(({ mode }) => {
       }
     },
     plugins: [react()],
+    css: {
+      postcss: './postcss.config.js',
+    },
     define: {
       'process.env.VITE_API_KEY': JSON.stringify(apiKey),
       'process.env.GEMINI_API_KEY': JSON.stringify(apiKey),
