@@ -183,6 +183,24 @@ export const StorageService = {
     }
   },
 
+  bulkAddCandidates: async (candidates: any[]) => {
+    try {
+      if (candidates.length === 0) return [];
+      const formatted = candidates.map(c => ({
+        ...c,
+        role: 'candidate'
+      }));
+      const { data, error } = await supabase
+        .from('profiles')
+        .insert(formatted);
+      if (error) throw error;
+      return data;
+    } catch (e) {
+      console.error("Failed to bulk add candidates to Supabase", e);
+      throw e;
+    }
+  },
+
   // --- Enterprise Requests (Database) ---
 
   submitEnterpriseRequest: async (requestData: any) => {
