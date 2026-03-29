@@ -45,9 +45,20 @@ export default function App() {
 
   // Sync initial state and listen for back/forward buttons
   useEffect(() => {
-    // Initialize history state on first mount
-    if (window.history.state === null) {
+    // Current history state
+    const currentState = window.history.state;
+
+    // 1. If we have NO state, initialize with HOME
+    if (currentState === null) {
+      console.log("App initialized: No history state found. Defaulting to HOME.");
       window.history.replaceState({ appView: AppView.HOME, sidebarView: 'DASHBOARD' }, '', '');
+      setView(AppView.HOME);
+    } 
+    // 2. If we DO have state, sync the view to it (handles refresh/history)
+    else if (typeof currentState.appView !== 'undefined') {
+      console.log("App initialized: Restoring state from history:", currentState.appView);
+      setView(currentState.appView as AppView);
+      if (currentState.sidebarView) setSidebarView(currentState.sidebarView as SidebarView);
     }
 
     const handlePopState = (event: PopStateEvent) => {

@@ -4,6 +4,7 @@ import { X, User, Mail, Lock, ArrowRight, ShieldCheck, UserPlus, LogIn, ChevronD
 import { StorageService } from '../services/storageService';
 import { JobPost } from '../types';
 import { PasswordInput } from './PasswordInput';
+import { supabase } from '../services/supabaseClient';
 
 export type AuthMode = 'CANDIDATE_LOGIN' | 'CANDIDATE_REGISTER' | 'ADMIN_LOGIN' | 'ADMIN_REGISTER';
 
@@ -45,40 +46,56 @@ export const AuthModal: React.FC<AuthModalProps> = ({ initialMode, onClose, onSu
     const isRegister = mode.endsWith('REGISTER');
     const isAdmin = mode.startsWith('ADMIN');
 
-    let url = '';
-    let payload = {};
-
-    if (isCandidate) {
-      url = isRegister ? '/api/auth/register/candidate' : '/api/auth/login/candidate';
-      payload = isRegister 
-        ? { name: formData.name, email: formData.email, password: formData.password, position: formData.position }
-        : { email: formData.email, password: formData.password };
-    } else {
-      url = isRegister ? '/api/auth/register/admin' : '/api/auth/login/admin';
-      payload = isRegister
-        ? { username: formData.username, email: formData.email, password: formData.password }
-        : { email: formData.email || formData.username, password: formData.password };
-    }
-
     try {
-      const resp = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-
-      if (!resp.ok) {
-        const errText = await resp.text();
-        throw new Error(errText || 'Auth error');
-      }
-
-      const data = await resp.json();
-      
       if (isRegister) {
-        setMode(isCandidate ? 'CANDIDATE_LOGIN' : 'ADMIN_LOGIN');
-        setError("Account created! Please login.");
+        // --- REGISTRATION ---
+        const { data: authData, error: authError } = await supabase.auth.signUp({
+          email: formData.email,
+          password: formData.password,
+        });
+
+        if (authError) throw authError;
+
+        if (authData.user) {
+          setMode(isCandidate ? 'CANDIDATE_LOGIN' : 'ADMIN_LOGIN');
+          setError("Account created! Please login.");
+        }
       } else {
-        onSuccess(isAdmin ? 'ADMIN' : 'CANDIDATE', data);
+        // --- LOGIN ---
+        // Support email or username for admin login by first checking if email-like
+        let loginEmail = formData.email;
+        if (isAdmin && !formData.email.includes('@')) {
+           // If it's a username, we'd need to look up the email first
+           const { data: profile, error: pe } = await supabase
+            .from('profiles')
+            .select('email')
+            .eq('username', formData.email)
+            .single();
+           if (profile) loginEmail = profile.email;
+        }
+
+        const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
+          email: loginEmail,
+          password: formData.password
+        });
+
+        if (authError) throw authError;
+
+        if (authData.user) {
+          // Fetch additional profile data
+          const { data: profile, error: profileError } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', authData.user.id)
+            .single();
+
+          if (profileError) throw profileError;
+
+          onSuccess(profile.role === 'ADMIN' ? 'ADMIN' : 'CANDIDATE', {
+            ...authData.user,
+            ...profile
+          });
+        }
       }
     } catch (err: any) {
       setError(err.message);

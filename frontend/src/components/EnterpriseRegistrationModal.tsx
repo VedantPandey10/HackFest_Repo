@@ -2,6 +2,7 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Building2, ArrowRight, ArrowLeft, Check, Sparkles, Users, Shield, BarChart3, Globe, Cpu } from 'lucide-react';
 import { PasswordInput } from './PasswordInput';
+import { StorageService } from '../services/storageService';
 
 interface EnterpriseRegistrationModalProps {
     onClose: () => void;
@@ -47,23 +48,14 @@ export const EnterpriseRegistrationModal: React.FC<EnterpriseRegistrationModalPr
         setError(null);
 
         try {
-            const resp = await fetch('/api/auth/register/enterprise', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    companyName: formData.companyName,
-                    contactName: formData.contactName,
-                    email: formData.email,
-                    phone: formData.phone || null,
-                    teamSize: formData.teamSize,
-                    password: formData.password
-                })
+            await StorageService.submitEnterpriseRequest({
+                companyName: formData.companyName,
+                contactName: formData.contactName,
+                email: formData.email,
+                phone: formData.phone || null,
+                teamSize: formData.teamSize,
+                password: formData.password
             });
-
-            if (!resp.ok) {
-                const errText = await resp.text();
-                throw new Error(errText || 'Registration failed.');
-            }
 
             setStep('CONFIRMATION');
         } catch (err: any) {

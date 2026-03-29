@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "concurrently --kill-others \"cd frontend && npm run dev\" \"cd backend && dotnet run\""
+    "dev": "concurrently --kill-others \"cd frontend && npm run dev\" \"cd backend && dotnet run\"",
+    "build": "cd frontend && npm install && npm run build"
   },
   "repository": {
     "type": "git",

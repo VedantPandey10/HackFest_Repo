@@ -63,11 +63,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
 
     const fetchEnterpriseRequests = async () => {
         try {
-            const resp = await fetch('/api/auth/enterprise-requests');
-            if (resp.ok) {
-                const data = await resp.json();
-                setEnterpriseRequests(data);
-            }
+            const data = await StorageService.getEnterpriseRequests();
+            setEnterpriseRequests(data);
         } catch (err) {
             console.error('Failed to fetch enterprise requests:', err);
         }
@@ -76,10 +73,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
     const handleApproveEnterprise = async (id: number) => {
         setActionLoading(id);
         try {
-            const resp = await fetch(`/api/auth/enterprise-requests/${id}/approve`, { method: 'PUT' });
-            if (resp.ok) {
-                await fetchEnterpriseRequests();
-            }
+            await StorageService.approveEnterpriseRequest(id);
+            await fetchEnterpriseRequests();
         } catch (err) {
             console.error('Failed to approve:', err);
         } finally {
@@ -91,14 +86,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
         if (!confirm('Are you sure you want to reject this enterprise request?')) return;
         setActionLoading(id);
         try {
-            const resp = await fetch(`/api/auth/enterprise-requests/${id}/reject`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ notes: 'Rejected by admin' })
-            });
-            if (resp.ok) {
-                await fetchEnterpriseRequests();
-            }
+            await StorageService.rejectEnterpriseRequest(id, 'Rejected by admin');
+            await fetchEnterpriseRequests();
         } catch (err) {
             console.error('Failed to reject:', err);
         } finally {
