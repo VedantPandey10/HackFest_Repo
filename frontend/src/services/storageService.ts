@@ -189,12 +189,19 @@ export const StorageService = {
   // --- Enterprise Requests (Database) ---
 
   submitEnterpriseRequest: async (requestData: any) => {
-    const { data, error } = await supabase.functions.invoke('auth-handler', {
-      body: { 
-        action: 'submit-enterprise-request',
-        data: requestData
-      }
-    });
+    const { data, error } = await supabase
+      .from('enterprise_requests')
+      .insert([
+        {
+          company_name: requestData.companyName,
+          contact_name: requestData.contactName,
+          email: requestData.email,
+          phone: requestData.phone,
+          team_size: requestData.teamSize,
+          password: requestData.password,
+          status: 'pending'
+        }
+      ]);
     if (error) throw error;
     return data;
   },
