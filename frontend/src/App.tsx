@@ -101,9 +101,9 @@ export default function App() {
     } else {
       setCandidate({
           id: data.candidateId,
-          name: data.name || 'Candidate',
+          name: data.full_name || data.name || 'Candidate',
           email: data.email,
-          position: data.position,
+          position: data.position || 'Standard Node',
           passwordHash: 'SHA256:7B9A2C...F310',
           plan: 'Professional Node',
           proctoringSettings: { ...proctoringSettings }
