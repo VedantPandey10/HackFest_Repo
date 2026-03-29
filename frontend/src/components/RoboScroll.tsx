@@ -298,7 +298,7 @@ function LaunchMeButton({ scrollProgress, onLaunch }: { scrollProgress: MotionVa
         onClick={onLaunch}
         whileHover={{ scale: 1.08, boxShadow: '0 0 50px rgba(99, 102, 241, 0.4)' }}
         whileTap={{ scale: 0.95 }}
-        className="group relative px-12 py-5 rounded-full bg-indigo-600 dark:bg-white text-white dark:text-black font-black text-sm tracking-[0.2em] uppercase transition-all duration-300 shadow-[0_0_50px_rgba(79,70,229,0.4)] dark:shadow-[0_0_50px_rgba(255,255,255,0.2)] hover:shadow-[0_0_60px_rgba(79,70,229,0.6)] dark:hover:shadow-[0_0_60px_rgba(255,255,255,0.3)] overflow-hidden flex items-center gap-4"
+        className="group relative px-12 py-5 rounded-full bg-indigo-600 hover:bg-indigo-700 text-white font-black text-sm tracking-[0.2em] uppercase transition-all duration-300 shadow-[0_0_50px_rgba(79,70,229,0.4)] hover:shadow-[0_0_60px_rgba(79,70,229,0.6)] overflow-hidden flex items-center gap-4"
       >
         {/* Shimmer effect */}
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
