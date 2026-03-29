@@ -386,12 +386,12 @@ export const InterviewScreen: React.FC<InterviewScreenProps> = ({ candidate, onC
       <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6 min-h-0 overflow-hidden">
 
         {/* LEFT PANEL: AI Avatar */}
-        <div className="hidden lg:flex lg:col-span-3 glass-card bg-white/40 dark:bg-slate-900/40 rounded-3xl shadow-xl border border-white/40 dark:border-white/5 flex-col items-center justify-center p-8 relative overflow-hidden transition-colors">
+        <div className="hidden lg:flex lg:col-span-3 glass-card bg-white/40 dark:bg-slate-900/40 rounded-3xl shadow-xl border border-white/40 dark:border-white/5 flex-col items-center justify-start p-8 pt-12 relative overflow-hidden transition-colors">
           {/* Subtle glow effect */}
           <div className="absolute inset-0 bg-gradient-to-b from-brand-500/5 to-transparent"></div>
 
           <div className="relative z-10 w-full flex flex-col items-center">
-            <div className="relative w-full aspect-video rounded-3xl overflow-hidden border-4 border-white/20 dark:border-white/10 shadow-2xl bg-slate-800 flex items-center justify-center group/avatar">
+            <div className="relative w-full aspect-[3.5/4.5] rounded-3xl overflow-hidden border-4 border-white/20 dark:border-white/10 shadow-2xl bg-slate-800 flex items-center justify-center group/avatar">
               {/* Meeting HUD elements */}
               <div className="absolute top-4 left-4 z-20 flex gap-2">
                  <div className="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse"></div>
