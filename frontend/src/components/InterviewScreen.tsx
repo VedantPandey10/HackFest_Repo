@@ -322,7 +322,7 @@ export const InterviewScreen: React.FC<InterviewScreenProps> = ({ candidate, onC
       <div className="flex-none h-16 glass-card bg-white/40 dark:bg-slate-900/40 rounded-2xl shadow-lg border border-white/40 dark:border-white/5 px-6 flex items-center justify-between z-10 transition-colors">
         <div className="flex items-center gap-4">
           <div className="h-10 w-10 bg-gradient-to-br from-brand-500 to-indigo-600 rounded-2xl flex items-center justify-center text-white font-black text-sm shadow-lg shadow-brand-500/20">
-            {candidate.name.charAt(0)}
+            {(candidate?.name || 'C').charAt(0)}
           </div>
           <div className="hidden sm:block">
             <p className="text-sm font-black text-slate-800 dark:text-white tracking-tight leading-none mb-1">{candidate.name}</p>

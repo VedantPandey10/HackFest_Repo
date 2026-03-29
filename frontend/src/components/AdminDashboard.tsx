@@ -406,7 +406,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
                                                     <td className="px-6 py-4">
                                                         <div className="flex items-center gap-3">
                                                             <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold text-xs">
-                                                                {s.candidate.name.charAt(0)}
+                                                                {(s.candidate.name || 'C').charAt(0)}
                                                             </div>
                                                             <div>
                                                                 <p className="font-medium text-slate-800 dark:text-slate-200">{s.candidate.name}</p>
@@ -456,7 +456,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
                             <div className="bg-white dark:bg-slate-900 p-6 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm transition-colors">
                                 <div className="flex items-start gap-6">
                                     <div className="w-16 h-16 rounded-2xl bg-indigo-100 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold text-2xl shrink-0 transition-colors">
-                                        {selectedSession.candidate.name.charAt(0)}
+                                        {(selectedSession.candidate.name || 'C').charAt(0)}
                                     </div>
                                     <div className="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4">
                                         <div>
@@ -1150,7 +1150,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
                                                 <td className="px-6 py-4">
                                                     <div className="flex items-center gap-3">
                                                         <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-500/20 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold text-xs">
-                                                            {req.companyName.charAt(0)}
+                                                            {(req.companyName || 'C').charAt(0)}
                                                         </div>
                                                         <span className="font-medium text-slate-800 dark:text-slate-200">{req.companyName}</span>
                                                     </div>

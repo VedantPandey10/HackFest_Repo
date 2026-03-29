@@ -101,7 +101,7 @@ export default function App() {
     } else {
       setCandidate({
           id: data.candidateId,
-          name: data.name,
+          name: data.name || 'Candidate',
           email: data.email,
           position: data.position,
           passwordHash: 'SHA256:7B9A2C...F310',

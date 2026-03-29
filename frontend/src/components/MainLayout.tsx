@@ -64,7 +64,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({
                 onClick={() => setShowAccountMenu(!showAccountMenu)}
               >
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-white shadow-lg shadow-indigo-500/20 hover:scale-105 transition-transform">
-                  {userName.charAt(0)}
+                  {(userName || 'U').charAt(0)}
                 </div>
                 <div className="absolute -bottom-1 -right-1 w-4 h-4 rounded-lg bg-emerald-500 border-2 border-white dark:border-slate-900 shadow-sm" />
                 
