@@ -125,9 +125,10 @@ export const StorageService = {
 
   getSessionsApi: async (): Promise<InterviewSession[]> => {
     try {
-      const { data, error } = await supabase.functions.invoke('sessions-handler', {
-        body: { action: 'get-sessions' }
-      });
+      const { data, error } = await supabase
+        .from('sessions')
+        .select('*')
+        .order('created_at', { ascending: false });
       if (error) throw error;
       return data || [];
     } catch (e) {
@@ -138,12 +139,9 @@ export const StorageService = {
 
   saveSession: async (session: any) => {
     try {
-      const { data, error } = await supabase.functions.invoke('sessions-handler', {
-        body: { 
-          action: 'save-session',
-          data: session
-        }
-      });
+      const { data, error } = await supabase
+        .from('sessions')
+        .insert([session]);
       if (error) throw error;
       return data;
     } catch (e) {
@@ -159,9 +157,11 @@ export const StorageService = {
 
   getAllCandidates: async (): Promise<any[]> => {
     try {
-      const { data, error } = await supabase.functions.invoke('admin-handler', {
-        body: { action: 'get-candidates' }
-      });
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('role', 'candidate')
+        .order('created_at', { ascending: false });
       if (error) throw error;
       return data || [];
     } catch (e) {
@@ -172,16 +172,13 @@ export const StorageService = {
 
   addCandidate: async (candidateData: any) => {
     try {
-      const { data, error } = await supabase.functions.invoke('admin-handler', {
-        body: { 
-          action: 'create-candidate',
-          data: candidateData
-        }
-      });
+      const { data, error } = await supabase
+        .from('profiles')
+        .insert([{ ...candidateData, role: 'candidate' }]);
       if (error) throw error;
       return data;
     } catch (e) {
-      console.error("Failed to add candidate via Edge Function", e);
+      console.error("Failed to add candidate directly to Supabase", e);
       throw e;
     }
   },
@@ -207,35 +204,31 @@ export const StorageService = {
   },
 
   getEnterpriseRequests: async () => {
-    const { data, error } = await supabase.functions.invoke('admin-handler', {
-      body: { action: 'get-enterprise-requests' }
-    });
+    const { data, error } = await supabase
+      .from('enterprise_requests')
+      .select('*')
+      .order('created_at', { ascending: false });
     if (error) throw error;
     return data;
   },
 
   approveEnterpriseRequest: async (id: number) => {
-    const { data, error } = await supabase.functions.invoke('auth-handler', {
-      body: { 
-        action: 'approve-enterprise-request',
-        data: { id }
-      }
-    });
+    const { data, error } = await supabase
+      .from('enterprise_requests')
+      .update({ status: 'approved', reviewed_at: new Date().toISOString() })
+      .eq('id', id);
     if (error) throw error;
     return data;
   },
 
   rejectEnterpriseRequest: async (id: number, notes?: string) => {
-    // We didn't implement specialized reject in edge function yet, 
-    // but we can just update status via supabase client directly if RLS allows, 
-    // or update the edge function.
-    // Let's assume the edge function handles 'reject-enterprise-request' too.
-    const { data, error } = await supabase.functions.invoke('auth-handler', {
-      body: { 
-        action: 'reject-enterprise-request',
-        data: { id, notes }
-      }
-    });
+    const { data, error } = await supabase
+      .from('enterprise_requests')
+      .update({ 
+        status: 'rejected', 
+        reviewed_at: new Date().toISOString()
+      })
+      .eq('id', id);
     if (error) throw error;
     return data;
   },
