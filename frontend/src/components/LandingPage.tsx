@@ -44,7 +44,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onCandidateLogin, onAd
           </button>
           <button 
             onClick={onCandidateLogin}
-            className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-xl shadow-indigo-500/20 transition-all active:scale-95"
+            className="px-8 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full font-black uppercase tracking-widest text-xs shadow-[0_0_30px_rgba(79,70,229,0.3)] hover:shadow-[0_0_40px_rgba(79,70,229,0.5)] transition-all active:scale-95"
           >
             Start Journey
           </button>
@@ -75,14 +75,14 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onCandidateLogin, onAd
           <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
             <button
               onClick={onCandidateLogin}
-              className="px-10 py-5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-[2rem] shadow-2xl shadow-indigo-600/30 transition-all active:scale-95 flex items-center gap-4 group"
+              className="px-12 py-5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-full shadow-[0_0_50px_rgba(79,70,229,0.4)] hover:shadow-[0_0_60px_rgba(79,70,229,0.6)] hover:-translate-y-1 transition-all active:scale-95 flex items-center gap-4 group"
             >
-              <span className="font-black text-lg">Start Candidate Journey</span>
+              <span className="font-black text-xl tracking-tight">Start Candidate Journey</span>
               <ArrowRight className="group-hover:translate-x-2 transition-all" strokeWidth={3} />
             </button>
             <button 
               onClick={onLearnMore}
-              className="px-8 py-5 rounded-[2rem] text-indigo-700 dark:text-slate-300 font-bold border border-indigo-200 dark:border-white/10 hover:bg-indigo-50 dark:hover:bg-white/5 transition-all relative overflow-hidden group"
+              className="px-8 py-5 rounded-full text-indigo-700 dark:text-slate-300 font-bold border border-indigo-200 dark:border-white/10 hover:bg-indigo-50 dark:hover:bg-white/5 transition-all relative overflow-hidden group"
             >
               <BorderBeam size={80} duration={8} delay={0} />
               Learn How it Works
