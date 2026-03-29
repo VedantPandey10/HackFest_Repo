@@ -35,6 +35,7 @@ interface OwnerDashboardProps {
 
 export const OwnerDashboard: React.FC<OwnerDashboardProps> = ({ onLogout }) => {
   const [tab, setTab] = useState<OwnerTab>('DASHBOARD');
+  const [auditFilter, setAuditFilter] = useState<'all' | 'candidate' | 'admin' | 'owner'>('all');
   const [requests, setRequests] = useState<EnterpriseRequest[]>([]);
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [loading, setLoading] = useState(true);
@@ -327,6 +328,33 @@ export const OwnerDashboard: React.FC<OwnerDashboardProps> = ({ onLogout }) => {
                 ))}
               </div>
 
+              {/* Filter Buttons */}
+              <div className="flex gap-2 mb-8">
+                {[
+                  { id: 'all' as const, label: 'All Users', count: totalUsers },
+                  { id: 'candidate' as const, label: 'Candidates', count: candidates.length },
+                  { id: 'admin' as const, label: 'Enterprise Admin', count: admins.length },
+                  { id: 'owner' as const, label: 'Owner', count: profiles.filter(p => p.role === 'owner').length },
+                ].map(f => (
+                  <button
+                    key={f.id}
+                    onClick={() => setAuditFilter(f.id)}
+                    className={`px-5 py-2.5 rounded-2xl text-[9px] font-black uppercase tracking-widest transition-all flex items-center gap-2 border ${
+                      auditFilter === f.id
+                        ? 'bg-indigo-600/15 text-indigo-400 border-indigo-500/30'
+                        : 'bg-white/5 text-slate-500 border-white/10 hover:text-white hover:bg-white/10'
+                    }`}
+                  >
+                    {f.label}
+                    <span className={`w-5 h-5 rounded-lg flex items-center justify-center text-[9px] ${
+                      auditFilter === f.id ? 'bg-indigo-500/20 text-indigo-400' : 'bg-white/5 text-slate-600'
+                    }`}>
+                      {f.count}
+                    </span>
+                  </button>
+                ))}
+              </div>
+
               {/* User Table */}
               <div className="bg-white/5 border border-white/10 rounded-3xl overflow-hidden">
                 {/* Header */}
@@ -337,10 +365,10 @@ export const OwnerDashboard: React.FC<OwnerDashboardProps> = ({ onLogout }) => {
                   <div className="col-span-3 text-right">Joined</div>
                 </div>
                 {/* Rows */}
-                {profiles.length === 0 ? (
+                {profiles.filter(p => auditFilter === 'all' ? true : p.role === auditFilter).length === 0 ? (
                   <div className="text-center py-16 text-slate-600 text-xs font-bold">No users found</div>
                 ) : (
-                  profiles.map((p, i) => (
+                  profiles.filter(p => auditFilter === 'all' ? true : p.role === auditFilter).map((p, i) => (
                     <motion.div
                       key={p.id}
                       initial={{ opacity: 0 }}
