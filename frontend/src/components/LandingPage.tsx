@@ -42,13 +42,12 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onCandidateLogin, onAd
           >
             Admin Node
           </button>
-          <InteractiveButton 
+          <button 
             onClick={onCandidateLogin}
-            className="!py-2.5 !px-6"
-            highlightHueDeg={270}
+            className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-xl shadow-indigo-500/20 transition-all active:scale-95"
           >
-            <span className="text-[10px] font-black uppercase tracking-widest">Start Journey</span>
-          </InteractiveButton>
+            Start Journey
+          </button>
         </div>
       </nav>
 
@@ -74,16 +73,13 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onCandidateLogin, onAd
           </p>
 
           <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
-            <InteractiveButton
+            <button
               onClick={onCandidateLogin}
-              className="!px-10 !py-5 shadow-2xl shadow-purple-600/30"
-              highlightHueDeg={270}
+              className="px-10 py-5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-[2rem] shadow-2xl shadow-indigo-600/30 transition-all active:scale-95 flex items-center gap-4 group"
             >
-              <div className="flex items-center gap-4 group">
-                <span className="font-black text-lg">Start Candidate Journey</span>
-                <ArrowRight className="group-hover:translate-x-2 transition-all" />
-              </div>
-            </InteractiveButton>
+              <span className="font-black text-lg">Start Candidate Journey</span>
+              <ArrowRight className="group-hover:translate-x-2 transition-all" strokeWidth={3} />
+            </button>
             <button 
               onClick={onLearnMore}
               className="px-8 py-5 rounded-[2rem] text-indigo-700 dark:text-slate-300 font-bold border border-indigo-200 dark:border-white/10 hover:bg-indigo-50 dark:hover:bg-white/5 transition-all relative overflow-hidden group"
