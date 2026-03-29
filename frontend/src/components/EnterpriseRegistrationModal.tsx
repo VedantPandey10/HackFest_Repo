@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Building2, ArrowRight, ArrowLeft, Check, Sparkles, Users, Shield, BarChart3, Globe, Cpu } from 'lucide-react';
 import { PasswordInput } from './PasswordInput';
 import { StorageService } from '../services/storageService';
+import { supabase } from '../services/supabaseClient';
 
 interface EnterpriseRegistrationModalProps {
     onClose: () => void;
@@ -48,6 +49,22 @@ export const EnterpriseRegistrationModal: React.FC<EnterpriseRegistrationModalPr
         setError(null);
 
         try {
+            // 1. Create Supabase Auth User for Admin
+            const { error: signUpError } = await supabase.auth.signUp({
+                email: formData.email,
+                password: formData.password,
+                options: {
+                    data: {
+                        full_name: formData.contactName,
+                        role: 'ADMIN',
+                        company_name: formData.companyName
+                    }
+                }
+            });
+
+            if (signUpError) throw signUpError;
+
+            // 2. Clear out the password before submitting to database (keep it separate from enterprise_requests)
             await StorageService.submitEnterpriseRequest({
                 companyName: formData.companyName,
                 contactName: formData.contactName,
