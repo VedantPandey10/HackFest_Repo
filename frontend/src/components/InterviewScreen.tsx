@@ -8,6 +8,7 @@ import { CameraMonitor } from './CameraMonitor';
 import { Mic, Volume2, ShieldAlert, ShieldCheck, Loader2, AlertTriangle, Maximize, Lock, ArrowRight } from 'lucide-react';
 import { VisualizerOrb } from './VisualizerOrb';
 import InteractiveButton from './ui/InteractiveButton';
+import { playBuzzer } from '../utils/audio';
 
 interface InterviewScreenProps {
   candidate: Candidate;
@@ -113,7 +114,7 @@ export const InterviewScreen: React.FC<InterviewScreenProps> = ({ candidate, onC
     enabled: isLockdownActive,
     onViolation: handleLockdownViolation,
     onTerminate: handleLockdownTerminate,
-    maxViolations: settings?.proctoring.maxWarnings || 3,
+    maxViolations: settings?.proctoring.maxWarnings || 8,
     graceMs: 1500,
   });
 
@@ -182,7 +183,10 @@ export const InterviewScreen: React.FC<InterviewScreenProps> = ({ candidate, onC
       message: `Strike ${count}: Loss of eye contact.`
     });
 
-    const maxWarnings = settings?.proctoring.maxWarnings || 3;
+    // Play strike-intensified buzzer
+    playBuzzer(warningLogRef.current.length);
+
+    const maxWarnings = settings?.proctoring.maxWarnings || 8;
     const totalWarnings = warningLogRef.current.length;
 
     if (totalWarnings >= maxWarnings) {
@@ -282,13 +286,13 @@ export const InterviewScreen: React.FC<InterviewScreenProps> = ({ candidate, onC
                   Strike Account
                 </p>
                 <p className="text-white text-xs font-black font-mono">
-                  {violationCount} / {settings?.proctoring.maxWarnings || 3}
+                  {violationCount} / {settings?.proctoring.maxWarnings || 8}
                 </p>
               </div>
               <div className="w-full bg-slate-800 rounded-full h-2.5 overflow-hidden">
                 <div
                   className="bg-red-500 h-full rounded-full transition-all duration-700 shadow-[0_0_10px_rgba(239,68,68,0.5)]"
-                  style={{ width: `${(violationCount / (settings?.proctoring.maxWarnings || 3)) * 100}%` }}
+                  style={{ width: `${(violationCount / (settings?.proctoring.maxWarnings || 8)) * 100}%` }}
                 />
               </div>
             </div>
@@ -387,7 +391,13 @@ export const InterviewScreen: React.FC<InterviewScreenProps> = ({ candidate, onC
           <div className="absolute inset-0 bg-gradient-to-b from-brand-500/5 to-transparent"></div>
 
           <div className="relative z-10 w-full flex flex-col items-center">
-            <div className="relative w-48 h-48 md:w-64 md:h-64 rounded-full overflow-hidden border-4 border-white/20 dark:border-white/10 shadow-2xl bg-slate-800 flex items-center justify-center">
+            <div className="relative w-full aspect-video rounded-3xl overflow-hidden border-4 border-white/20 dark:border-white/10 shadow-2xl bg-slate-800 flex items-center justify-center group/avatar">
+              {/* Meeting HUD elements */}
+              <div className="absolute top-4 left-4 z-20 flex gap-2">
+                 <div className="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse"></div>
+                 <span className="text-[10px] font-black text-white/60 uppercase tracking-widest">Live HD</span>
+              </div>
+              
               {/* Fallback to Orb if video fails or when status is thinking */}
               {status === InterviewStatus.THINKING && (
                 <div className="absolute inset-0 z-20 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center">
@@ -404,8 +414,17 @@ export const InterviewScreen: React.FC<InterviewScreenProps> = ({ candidate, onC
                 playsInline
               />
 
-              {/* Status Glow */}
-              <div className={`absolute inset-0 pointer-events-none rounded-full transition-all duration-500 ${isSpeaking ? 'shadow-[inset_0_0_40px_rgba(79,70,229,0.4)]' : 'shadow-none'}`}></div>
+              {/* Status Glow (Urgent Red on Violation) */}
+              <div className={`absolute inset-0 pointer-events-none rounded-3xl transition-all duration-500 ${isSpeaking ? 'shadow-[inset_0_0_40px_rgba(79,70,229,0.4)]' : 'shadow-none'}`}></div>
+              
+              {/* Meeting Label */}
+              <div className="absolute bottom-4 left-4 right-4 z-20 flex justify-between items-end opacity-0 group-hover/avatar:opacity-100 transition-opacity">
+                 <span className="text-[10px] font-black text-white bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/10 italic">Evaluation Bot</span>
+                 <div className="flex gap-1">
+                    <div className="w-1.5 h-1.5 rounded-full bg-indigo-500"></div>
+                    <div className="w-1.5 h-1.5 rounded-full bg-indigo-500/40"></div>
+                 </div>
+              </div>
             </div>
             <div className="mt-10 text-center space-y-2">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-white/5">

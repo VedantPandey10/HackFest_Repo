@@ -17,7 +17,7 @@ const DEFAULT_SETTINGS: RoleSettings = {
     difficulty: 'Medium',
     preset: 'Normal',
     weights: { concept: 50, grammar: 20, fluency: 20, camera: 10 },
-    proctoring: { maxWarnings: 3, sensitivity: 'Medium', includeInScore: true }
+    proctoring: { maxWarnings: 8, sensitivity: 'Medium', includeInScore: true }
 };
 
 export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
