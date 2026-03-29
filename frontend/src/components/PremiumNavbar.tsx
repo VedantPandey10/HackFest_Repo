@@ -4,10 +4,10 @@ import { motion } from 'framer-motion';
 import { BrainCircuit } from 'lucide-react';
 
 interface PremiumNavbarProps {
-  onGoToLanding: () => void;
+  onOwnerLogin: () => void;
 }
 
-const PremiumNavbar: React.FC<PremiumNavbarProps> = ({ onGoToLanding }) => {
+const PremiumNavbar: React.FC<PremiumNavbarProps> = ({ onOwnerLogin }) => {
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -42,7 +42,7 @@ const PremiumNavbar: React.FC<PremiumNavbarProps> = ({ onGoToLanding }) => {
         <motion.button
           whileHover={{ scale: 1.03 }}
           whileTap={{ scale: 0.97 }}
-          onClick={onGoToLanding}
+          onClick={onOwnerLogin}
           className="flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 bg-white/5 hover:bg-white/10 transition-all duration-300"
         >
           <svg width="14" height="14" viewBox="0 0 16 16" fill="none">

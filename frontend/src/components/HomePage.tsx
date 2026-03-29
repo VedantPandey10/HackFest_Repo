@@ -6,13 +6,14 @@ import PremiumFooter from './PremiumFooter';
 
 interface HomePageProps {
   onGoToLanding: () => void;
+  onOwnerLogin: () => void;
   onEnterpriseCTA: () => void;
 }
 
-export const HomePage: React.FC<HomePageProps> = ({ onGoToLanding, onEnterpriseCTA }) => {
+export const HomePage: React.FC<HomePageProps> = ({ onGoToLanding, onOwnerLogin, onEnterpriseCTA }) => {
   return (
     <div className="min-h-screen bg-[#0a0a0f] text-white selection:bg-lavender selection:text-main relative">
-      <PremiumNavbar onGoToLanding={onGoToLanding} />
+      <PremiumNavbar onOwnerLogin={onOwnerLogin} />
       
       <main className="relative z-10">
         <RoboScroll onGoToLanding={onGoToLanding} />

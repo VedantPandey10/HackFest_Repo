@@ -10,6 +10,7 @@ import { MainLayout } from './components/MainLayout';
 import { SidebarView } from './components/Sidebar';
 import { UserDashboard } from './components/UserDashboard';
 import { OwnerDashboard } from './components/OwnerDashboard';
+import { OwnerLoginPage } from './components/OwnerLoginPage';
 import { ReportsScreen } from './components/ReportsScreen';
 import { AnalyticsScreen } from './components/AnalyticsScreen';
 import { ProfileSetup } from './components/ProfileSetup';
@@ -29,7 +30,8 @@ enum AppView {
   LEARN_HOW_IT_WORKS,
   AUTHENTICATED,
   ADMIN,
-  OWNER
+  OWNER,
+  OWNER_LOGIN
 }
 
 export default function App() {
@@ -185,6 +187,7 @@ export default function App() {
             <HomePage 
               onGoToLanding={() => navigateTo(AppView.LANDING)} 
               onEnterpriseCTA={() => setShowEnterpriseModal(true)}
+              onOwnerLogin={() => navigateTo(AppView.OWNER_LOGIN)}
             />
           </motion.div>
         )}
@@ -272,6 +275,21 @@ export default function App() {
                 )}
               </div>
             </MainLayout>
+          </motion.div>
+        )}
+
+        {view === AppView.OWNER_LOGIN && (
+          <motion.div 
+            key="owner-login"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="h-full w-full"
+          >
+            <OwnerLoginPage 
+              onSuccess={handleAuthSuccess as any} 
+              onBack={() => navigateTo(AppView.HOME)} 
+            />
           </motion.div>
         )}
 
