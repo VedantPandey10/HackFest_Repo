@@ -86,10 +86,10 @@ export default function AnimatedGenerateButton({
 
       <style>{`
         .ui-glass-btn {
-          --brand-color: #ffffff;
-          --brand-glow: rgba(255, 255, 255, 0.5);
-          --glass-bg: rgba(255, 255, 255, 0.05);
-          --glass-border: rgba(255, 255, 255, 0.1);
+          --brand-color: hsl(${highlightHueDeg}, 100%, 70%);
+          --brand-glow: hsla(${highlightHueDeg}, 100%, 60%, 0.5);
+          --glass-bg: hsla(${highlightHueDeg}, 100%, 40%, 0.05);
+          --glass-border: hsla(${highlightHueDeg}, 100%, 50%, 0.1);
           z-index: 1;
         }
 
@@ -108,10 +108,10 @@ export default function AnimatedGenerateButton({
         }
 
         .ui-glass-btn:hover .ui-glass-btn-bg {
-          background: rgba(255, 255, 255, 0.08);
-          border-color: rgba(255, 255, 255, 0.4);
+          background: hsla(${highlightHueDeg}, 100%, 50%, 0.12);
+          border-color: hsla(${highlightHueDeg}, 100%, 60%, 0.4);
           transform: translateY(-2px);
-          box-shadow: 0 20px 40px -12px rgba(255, 255, 255, 0.15),
+          box-shadow: 0 20px 40px -12px hsla(${highlightHueDeg}, 100%, 50%, 0.2),
                       inset 0 1px 1px rgba(255, 255, 255, 0.2);
         }
 

@@ -45,6 +45,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onCandidateLogin, onAd
           <InteractiveButton 
             onClick={onCandidateLogin}
             className="!py-2.5 !px-6"
+            highlightHueDeg={270}
           >
             <span className="text-[10px] font-black uppercase tracking-widest">Start Journey</span>
           </InteractiveButton>
@@ -75,7 +76,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onCandidateLogin, onAd
           <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
             <InteractiveButton
               onClick={onCandidateLogin}
-              className="!px-10 !py-5 shadow-2xl shadow-indigo-600/30"
+              className="!px-10 !py-5 shadow-2xl shadow-purple-600/30"
+              highlightHueDeg={270}
             >
               <div className="flex items-center gap-4 group">
                 <span className="font-black text-lg">Start Candidate Journey</span>
