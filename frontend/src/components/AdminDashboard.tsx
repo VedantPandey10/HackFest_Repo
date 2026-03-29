@@ -6,6 +6,8 @@ import {
     Users, Settings, LogOut, Search, Shield, Briefcase, Pencil, Plus, Save, Trash2,
     SlidersHorizontal, Activity, ToggleLeft, ToggleRight, Info, AlertTriangle, CheckCircle, XCircle, Eye, Clock, Mail, Phone, CreditCard
 } from 'lucide-react';
+import InteractiveButton from './ui/InteractiveButton';
+import AnimatedGenerateButton from './ui/animated-generate-button-shadcn-tailwind';
 
 interface AdminDashboardProps {
     onLogout: () => void;
@@ -327,12 +329,15 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
 
                     <div className="flex items-center gap-4">
                         {activeTab === 'candidates' && !selectedSession && (
-                            <button
+                            <InteractiveButton
                                 onClick={() => setIsAddModalOpen(true)}
-                                className="bg-indigo-600 dark:bg-indigo-500 text-white px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 hover:bg-indigo-700 dark:hover:bg-indigo-600 shadow-lg shadow-indigo-500/20 transition-all hover:-translate-y-0.5"
+                                className="!py-2 !px-4"
                             >
-                                <Plus size={18} /> Add Participant
-                            </button>
+                                <div className="flex items-center gap-2">
+                                    <Plus size={18} /> 
+                                    <span className="text-sm font-bold">Add Participant</span>
+                                </div>
+                            </InteractiveButton>
                         )}
 
                         {/* Back Buttons */}
@@ -636,9 +641,15 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
                                     <Info className="text-indigo-500" size={20} />
                                     <p className="text-indigo-700 dark:text-indigo-300 text-sm font-medium transition-colors">Manage interview roles and configuration settings.</p>
                                 </div>
-                                <button onClick={handleCreateJob} className="bg-indigo-600 dark:bg-indigo-500 text-white px-4 py-2 rounded-lg font-bold flex items-center gap-2 hover:bg-indigo-700 dark:hover:bg-indigo-600 shadow-sm transition-all hover:-translate-y-0.5">
-                                    <Plus size={18} /> New Role
-                                </button>
+                                <InteractiveButton 
+                                    onClick={handleCreateJob}
+                                    className="!py-2 !px-4"
+                                >
+                                    <div className="flex items-center gap-2">
+                                        <Plus size={18} />
+                                        <span className="text-sm font-bold">New Role</span>
+                                    </div>
+                                </InteractiveButton>
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -731,13 +742,14 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
                                 </div>
                                 <div className="flex gap-2">
                                     <button onClick={() => { if (confirm("Discard all changes?")) setEditingJob(null); }} className="px-5 py-2 text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-800 rounded-lg text-sm font-bold transition-all">Discard</button>
-                                    <button
+                                    <AnimatedGenerateButton
                                         onClick={handleSaveJob}
-                                        disabled={!editingJob.title.trim()}
-                                        className={`px-5 py-2 bg-emerald-600 dark:bg-emerald-500 text-white hover:bg-emerald-700 dark:hover:bg-emerald-600 rounded-lg text-sm font-bold flex items-center gap-2 shadow-lg shadow-emerald-200 dark:shadow-emerald-900/20 transition-all ${!editingJob.title.trim() ? 'opacity-50 cursor-not-allowed' : 'hover:-translate-y-0.5 active:scale-95 animate-pulse-subtle'}`}
-                                    >
-                                        <Save size={16} /> Save Changes
-                                    </button>
+                                        disabled={!editingJob.title.trim() || isSavingParticipant}
+                                        labelIdle="Save Changes"
+                                        labelActive="Saving..."
+                                        generating={isSavingParticipant}
+                                        className="min-w-[160px]"
+                                    />
                                 </div>
                             </div>
 

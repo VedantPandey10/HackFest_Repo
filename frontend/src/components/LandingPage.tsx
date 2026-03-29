@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { BrainCircuit, UserCircle, ShieldCheck, ArrowRight, ChevronRight, Zap, Target, BarChart3, Globe, Lock, Cpu, Sparkles } from 'lucide-react';
 import { ThemeToggle } from './ThemeToggle';
 import { PricingSection } from './PricingSection';
+import { BorderBeam } from './ui/BorderBeam';
+import InteractiveButton from './ui/InteractiveButton';
 
 interface LandingPageProps {
   onCandidateLogin: () => void;
@@ -14,13 +16,13 @@ interface LandingPageProps {
 export const LandingPage: React.FC<LandingPageProps> = ({ onCandidateLogin, onAdminLogin, onEnterpriseCTA, onLearnMore }) => {
   return (
     <div className="min-h-screen bg-transparent relative overflow-x-hidden selection:bg-indigo-500 selection:text-white transition-colors duration-300">
-      {/* Background Orbs */}
-      <div className="absolute inset-0 z-0 pointer-events-none">
+      {/* Background Effects */}
+      <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
         <div 
-          className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-[radial-gradient(circle,rgba(79,70,229,0.15)_0%,transparent_70%)] rounded-full" 
+          className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] bg-[radial-gradient(circle,rgba(79,70,229,0.15)_0%,transparent_70%)] rounded-full blur-[80px]" 
         />
         <div 
-          className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-[radial-gradient(circle,rgba(37,99,235,0.15)_0%,transparent_70%)] rounded-full" 
+          className="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-[radial-gradient(circle,rgba(37,99,235,0.15)_0%,transparent_70%)] rounded-full blur-[80px]" 
         />
       </div>
 
@@ -40,12 +42,12 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onCandidateLogin, onAd
           >
             Admin Node
           </button>
-          <button 
+          <InteractiveButton 
             onClick={onCandidateLogin}
-            className="px-6 py-2.5 bg-indigo-600 text-white rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-600/20"
+            className="!py-2.5 !px-6"
           >
-            Start Journey
-          </button>
+            <span className="text-[10px] font-black uppercase tracking-widest">Start Journey</span>
+          </InteractiveButton>
         </div>
       </nav>
 
@@ -71,18 +73,20 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onCandidateLogin, onAd
           </p>
 
           <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+            <InteractiveButton
               onClick={onCandidateLogin}
-              className="px-10 py-5 bg-indigo-600 rounded-[2rem] text-white font-black text-lg flex items-center gap-4 shadow-2xl shadow-indigo-600/30 group hover:bg-indigo-700 transition-all"
+              className="!px-10 !py-5 shadow-2xl shadow-indigo-600/30"
             >
-              Start Candidate Journey <ArrowRight className="group-hover:translate-x-2 transition-all" />
-            </motion.button>
+              <div className="flex items-center gap-4 group">
+                <span className="font-black text-lg">Start Candidate Journey</span>
+                <ArrowRight className="group-hover:translate-x-2 transition-all" />
+              </div>
+            </InteractiveButton>
             <button 
               onClick={onLearnMore}
-              className="px-8 py-5 rounded-[2rem] text-indigo-700 dark:text-slate-300 font-bold border border-indigo-200 dark:border-white/10 hover:bg-indigo-50 dark:hover:bg-white/5 transition-all"
+              className="px-8 py-5 rounded-[2rem] text-indigo-700 dark:text-slate-300 font-bold border border-indigo-200 dark:border-white/10 hover:bg-indigo-50 dark:hover:bg-white/5 transition-all relative overflow-hidden group"
             >
+              <BorderBeam size={80} duration={8} delay={0} />
               Learn How it Works
             </button>
           </div>
@@ -114,6 +118,7 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onCandidateLogin, onAd
               <p className="text-base font-medium text-indigo-900/60 dark:text-slate-400 leading-relaxed">
                 {feature.desc}
               </p>
+              <BorderBeam size={250} duration={12} delay={idx * 2} colorFrom="#6366f1" colorTo="rgba(99,102,241,0)" />
             </motion.div>
           ))}
         </div>

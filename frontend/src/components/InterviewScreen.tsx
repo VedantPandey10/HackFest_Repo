@@ -7,6 +7,7 @@ import { useFullscreenLockdown, LockdownViolation } from '../hooks/useFullscreen
 import { CameraMonitor } from './CameraMonitor';
 import { Mic, Volume2, ShieldAlert, ShieldCheck, Loader2, AlertTriangle, Maximize, Lock, ArrowRight } from 'lucide-react';
 import { VisualizerOrb } from './VisualizerOrb';
+import InteractiveButton from './ui/InteractiveButton';
 
 interface InterviewScreenProps {
   candidate: Candidate;
@@ -278,13 +279,15 @@ export const InterviewScreen: React.FC<InterviewScreenProps> = ({ candidate, onC
               </div>
             </div>
 
-            <button
+            <InteractiveButton
               onClick={dismissViolationOverlay}
-              className="w-full py-4 bg-white hover:bg-slate-100 text-slate-950 font-black rounded-2xl transition-all flex items-center justify-center gap-3 text-lg shadow-xl hover:scale-[1.02] active:scale-95 group"
+              className="w-full h-14 bg-white hover:bg-slate-100 text-slate-950 shadow-xl group"
             >
-              <Maximize size={22} className="group-hover:rotate-12 transition-transform" />
-              Resume Assessment
-            </button>
+              <div className="flex items-center justify-center gap-3">
+                <Maximize size={22} className="group-hover:rotate-12 transition-transform" />
+                <span className="text-lg font-black uppercase tracking-tight">Resume Assessment</span>
+              </div>
+            </InteractiveButton>
             <p className="text-red-400/60 text-[9px] mt-6 uppercase tracking-[0.4em] font-black">
               Zero tolerance for external assistance
             </p>
@@ -458,18 +461,20 @@ export const InterviewScreen: React.FC<InterviewScreenProps> = ({ candidate, onC
                 </div>
 
                 <div className="shrink-0 pt-6 mt-6">
-                  <button
+                  <InteractiveButton
                     onClick={processSubmission}
                     disabled={!liveTranscript.trim() || status !== InterviewStatus.LISTENING}
-                    className={`w-full py-5 rounded-2xl font-black text-lg transition-all shadow-xl tracking-tight flex items-center justify-center gap-3 active:scale-95 group
+                    className={`w-full h-16 shadow-xl active:scale-95 group
                       ${!liveTranscript.trim() || status !== InterviewStatus.LISTENING
-                        ? 'bg-slate-200 dark:bg-slate-800 text-slate-400 dark:text-slate-600 cursor-not-allowed shadow-none'
-                        : 'bg-brand-600 hover:bg-brand-700 dark:bg-brand-500 dark:hover:bg-brand-600 text-white shadow-brand-500/20'
+                        ? 'opacity-50 cursor-not-allowed shadow-none'
+                        : 'bg-brand-600'
                       }`}
                   >
-                    <span>Finalize and Submit Response</span>
-                    <ArrowRight size={22} className="group-hover:translate-x-1 transition-transform" />
-                  </button>
+                    <div className="flex items-center justify-center gap-3">
+                      <span className="font-black text-lg tracking-tight uppercase">Finalize and Submit Response</span>
+                      <ArrowRight size={22} className="group-hover:translate-x-1 transition-transform" />
+                    </div>
+                  </InteractiveButton>
                   <p className="text-[9px] text-center mt-3 text-slate-400 dark:text-slate-500 font-bold uppercase tracking-[0.2em]">Response auto-records beyond timeout threshold</p>
                 </div>
               </div>
