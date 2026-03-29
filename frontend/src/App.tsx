@@ -9,6 +9,7 @@ import { AdminDashboard } from './components/AdminDashboard';
 import { MainLayout } from './components/MainLayout';
 import { SidebarView } from './components/Sidebar';
 import { UserDashboard } from './components/UserDashboard';
+import { OwnerDashboard } from './components/OwnerDashboard';
 import { ReportsScreen } from './components/ReportsScreen';
 import { AnalyticsScreen } from './components/AnalyticsScreen';
 import { ProfileSetup } from './components/ProfileSetup';
@@ -27,7 +28,8 @@ enum AppView {
   LANDING,
   LEARN_HOW_IT_WORKS,
   AUTHENTICATED,
-  ADMIN
+  ADMIN,
+  OWNER
 }
 
 export default function App() {
@@ -80,6 +82,7 @@ export default function App() {
   const [showEnterpriseModal, setShowEnterpriseModal] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
+  const [isOwnerAuthenticated, setIsOwnerAuthenticated] = useState(false);
   
   const [interviewStep, setInterviewStep] = useState<'IDLE' | 'PROFILE_SETUP' | 'CAMERA_CHECK' | 'INTERVIEW' | 'SUMMARY'>('IDLE');
   
@@ -94,8 +97,11 @@ export default function App() {
     tabSwitching: true
   });
 
-  const handleAuthSuccess = (role: 'ADMIN' | 'CANDIDATE', data: any) => {
-    if (role === 'ADMIN') {
+  const handleAuthSuccess = (role: 'ADMIN' | 'CANDIDATE' | 'OWNER', data: any) => {
+    if (role === 'OWNER') {
+      setIsOwnerAuthenticated(true);
+      setView(AppView.OWNER);
+    } else if (role === 'ADMIN') {
       setIsAdminAuthenticated(true);
       setView(AppView.ADMIN);
     } else {

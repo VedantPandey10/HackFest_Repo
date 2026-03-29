@@ -52,7 +52,7 @@ const PremiumNavbar: React.FC<PremiumNavbarProps> = ({ onGoToLanding }) => {
             <rect x="9.5" y="9.5" width="5.5" height="5.5" rx="1.5" stroke="white" strokeWidth="1.5" opacity="0.7"/>
           </svg>
           <span className="text-[11px] font-bold tracking-[0.15em] text-white/70 uppercase">
-            Explore Platform
+            Owner Login
           </span>
         </motion.button>
       </div>

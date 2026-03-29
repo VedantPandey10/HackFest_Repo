@@ -47,7 +47,7 @@ export const AmethystNavbar: React.FC<AmethystNavbarProps> = ({ onGoToLanding })
           className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/10 border border-white/10 text-white font-black text-[10px] uppercase tracking-widest hover:bg-white hover:text-black transition-all group"
         >
           <LayoutGrid size={14} className="group-hover:rotate-90 transition-transform" />
-          Explore Platform
+          Owner Login
         </motion.button>
       </div>
     </motion.nav>
