@@ -135,6 +135,7 @@ export interface VisualMetrics {
   headPose: 'FORWARD' | 'DOWN' | 'LEFT' | 'RIGHT' | 'UP';
   isLookingDown: boolean;       // Eyes pointing downward (reading phone/notes)
   isTalking: boolean;           // Lips moving (possible whispering to someone)
+  isTalkingStable: boolean;     // Smoothed version of isTalking for UI stability
   suspectedPhoneUse: boolean;   // Composite: head down + eyes down
   suspicionLevel: number;       // 0-100 overall suspicion score
 }

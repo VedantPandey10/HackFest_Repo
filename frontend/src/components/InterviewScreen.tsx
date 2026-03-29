@@ -44,6 +44,7 @@ export const InterviewScreen: React.FC<InterviewScreenProps> = ({ candidate, onC
     headPose: 'FORWARD',
     isLookingDown: false,
     isTalking: false,
+    isTalkingStable: false,
     suspectedPhoneUse: false,
     suspicionLevel: 0,
   });
@@ -602,8 +603,8 @@ export const InterviewScreen: React.FC<InterviewScreenProps> = ({ candidate, onC
                   },
                   { 
                     label: 'Audio Leak', 
-                    status: visualMetrics.isTalking ? 'Detected' : 'Silent', 
-                    active: !visualMetrics.isTalking 
+                    status: visualMetrics.isTalkingStable ? 'Detected' : 'Silent', 
+                    active: !visualMetrics.isTalkingStable 
                   },
                 ].map((item, i) => (
                   <div key={i} className={`flex items-center justify-between group ${(item as any).disabled ? 'opacity-50' : ''}`}>

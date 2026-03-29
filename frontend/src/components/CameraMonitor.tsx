@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef, useState } from 'react';
 import { FaceLandmarker, FilesetResolver } from '@mediapipe/tasks-vision';
 import { AlertTriangle, UserCheck, Eye, Camera, Lock, ScanFace } from 'lucide-react';
@@ -42,6 +41,7 @@ export const CameraMonitor: React.FC<CameraMonitorProps> = ({
   const multipleFacesFramesRef = useRef<number>(0);
   const lookingDownFramesRef = useRef<number>(0);
   const talkingFramesRef = useRef<number>(0);
+  const stableTalkingCounterRef = useRef<number>(0);
   const phoneUseFramesRef = useRef<number>(0);
   const lastWarningTimeRef = useRef<number>(0);
   const confidenceAccumulatorRef = useRef<number[]>([]);
@@ -185,7 +185,7 @@ export const CameraMonitor: React.FC<CameraMonitorProps> = ({
       }
       onMetricsUpdate({
         isPresent: false, isLookingAtCamera: false, currentExpression: 'Unknown', confidenceLevel: 0,
-        headPose: 'FORWARD', isLookingDown: false, isTalking: false, suspectedPhoneUse: false, suspicionLevel: 0
+        headPose: 'FORWARD', isLookingDown: false, isTalking: false, isTalkingStable: false, suspectedPhoneUse: false, suspicionLevel: 0
       });
       return;
     } else {
@@ -247,6 +247,14 @@ export const CameraMonitor: React.FC<CameraMonitorProps> = ({
     const mouthPucker = getBlendshape('mouthPucker');
     const lipActivity = jawOpen + (1 - mouthClose) + mouthPucker;
     const isTalking = lipActivity > 0.85; // Increased threshold to filter subtle movement/background noise
+
+    // UI STABILITY LOGIC: verify talking for ~15 frames before flagging in telemetry
+    if (isTalking && !isAgentSpeaking) {
+      stableTalkingCounterRef.current = Math.min(stableTalkingCounterRef.current + 1, 30);
+    } else {
+      stableTalkingCounterRef.current = Math.max(stableTalkingCounterRef.current - 1, 0);
+    }
+    const isTalkingStable = stableTalkingCounterRef.current > 15;
 
     if (isTalking && !isAgentSpeaking) { // Safe-zone: Skip talking detection while AI is asking a question
       talkingFramesRef.current += 1;
@@ -334,6 +342,7 @@ export const CameraMonitor: React.FC<CameraMonitorProps> = ({
       headPose: isEyeTrackingEnabled ? headPose : 'FORWARD',
       isLookingDown: isEyeTrackingEnabled ? (isHeadDown || isEyesLookingDown) : false,
       isTalking,
+      isTalkingStable,
       suspectedPhoneUse: isEyeTrackingEnabled ? suspectedPhoneUse : false,
       suspicionLevel: avgSuspicion,
     });
