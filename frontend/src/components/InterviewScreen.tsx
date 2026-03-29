@@ -24,6 +24,7 @@ export const InterviewScreen: React.FC<InterviewScreenProps> = ({ candidate, onC
   const [liveTranscript, setLiveTranscript] = useState('');
   const [processingMsg, setProcessingMsg] = useState('Evaluating answer...');
   const [voicePulse, setVoicePulse] = useState(0);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const [isCameraReady, setIsCameraReady] = useState(false);
   const [settings, setSettings] = useState<RoleSettings | null>(null);
 
@@ -53,8 +54,21 @@ export const InterviewScreen: React.FC<InterviewScreenProps> = ({ candidate, onC
     startListening,
     stopListening,
     speak,
-    stopSpeaking
+    stopSpeaking,
+    isSpeaking
   } = useSpeech();
+
+  // ─── Avatar Video Sync ─────────────────────────────────────
+  useEffect(() => {
+    if (videoRef.current) {
+      if (isSpeaking) {
+        videoRef.current.play().catch(err => console.error("Video play failed:", err));
+      } else {
+        videoRef.current.pause();
+        videoRef.current.currentTime = 0; // Reset to idle frame
+      }
+    }
+  }, [isSpeaking]);
 
   // ─── Fullscreen Lockdown ───────────────────────────────────
   const isLockdownActive = isCameraReady && 
@@ -373,7 +387,26 @@ export const InterviewScreen: React.FC<InterviewScreenProps> = ({ candidate, onC
           <div className="absolute inset-0 bg-gradient-to-b from-brand-500/5 to-transparent"></div>
 
           <div className="relative z-10 w-full flex flex-col items-center">
-            <VisualizerOrb status={status} pulse={voicePulse} />
+            <div className="relative w-48 h-48 md:w-64 md:h-64 rounded-full overflow-hidden border-4 border-white/20 dark:border-white/10 shadow-2xl bg-slate-800 flex items-center justify-center">
+              {/* Fallback to Orb if video fails or when status is thinking */}
+              {status === InterviewStatus.THINKING && (
+                <div className="absolute inset-0 z-20 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center">
+                   <VisualizerOrb status={status} pulse={voicePulse} />
+                </div>
+              )}
+              
+              <video
+                ref={videoRef}
+                src="/videos/avatar.mp4"
+                className={`w-full h-full object-cover transition-opacity duration-500 ${status === InterviewStatus.THINKING ? 'opacity-20' : 'opacity-100'}`}
+                loop
+                muted
+                playsInline
+              />
+
+              {/* Status Glow */}
+              <div className={`absolute inset-0 pointer-events-none rounded-full transition-all duration-500 ${isSpeaking ? 'shadow-[inset_0_0_40px_rgba(79,70,229,0.4)]' : 'shadow-none'}`}></div>
+            </div>
             <div className="mt-10 text-center space-y-2">
               <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-white/5">
                 <div className={`w-2 h-2 rounded-full ${status === InterviewStatus.ASKING ? 'bg-indigo-500 animate-pulse' : 'bg-emerald-500 animate-pulse'}`}></div>
