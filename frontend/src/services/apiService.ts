@@ -18,10 +18,13 @@ const getAI = () => {
 const MODEL_FAST = "gemini-2.5-flash";
 
 export const startInterview = async (candidate: Candidate): Promise<{ question: Question; totalQuestions: number; settings?: RoleSettings }> => {
-  // Fetch questions specific to the candidate's job role
+  // Clear any old session questions
+  sessionStorage.removeItem('current_interview_questions');
+
   let questions: Question[] = [];
   let settings: RoleSettings | undefined;
 
+  // 1. Fetch questions from job post if assigned
   if (candidate.jobPostId) {
     const job = StorageService.getJobById(candidate.jobPostId);
     if (job) {
@@ -30,58 +33,61 @@ export const startInterview = async (candidate: Candidate): Promise<{ question: 
     }
   }
 
-  // Generate a resume-based question if resume text exists
-  if (candidate.resumeText) {
+  // 2. If no job questions, generate 5 domain-specific questions using AI
+  if (questions.length === 0) {
     try {
-      const resumePrompt = `
-        You are an expert technical recruiter. Based on the following candidate resume, generate ONE insightful interview question that probes their specific experience or a project mentioned.
+      const domainPrompt = `
+        You are an elite technical interviewer. Generate exactly 5 distinct, high-quality technical interview questions for a candidate applying for the position of: "${candidate.position || 'Software Engineer'}".
         
-        RESUME CONTENT:
-        ${candidate.resumeText.substring(0, 2000)}
+        CONTEXT:
+        ${candidate.resumeText ? `CANDIDATE RESUME SUMMARY: ${candidate.resumeText.substring(0, 1000)}` : "No resume provided. Focus on core domain knowledge."}
         
         INSTRUCTIONS:
-        1. The question should be professional and technical.
-        2. Provide a brief Reference Answer (what a good answer looks like).
-        3. Provide 3-4 Key Points that should be covered.
+        1. Each question must be technical and relevant to the domain.
+        2. Progress from "Medium" to "Advanced" difficulty across the 5 questions.
+        3. For each question, provide a detailed "Reference Answer" (how an ideal candidate would respond).
+        4. For each question, provide 3-4 "Key Points" the candidate must mention.
         
-        Return strict JSON.
+        Return strict JSON as an array of objects.
       `;
 
       const response = await getAI().models.generateContent({
         model: MODEL_FAST,
-        contents: resumePrompt,
+        contents: domainPrompt,
         config: {
           responseMimeType: "application/json",
           responseSchema: {
-            type: Type.OBJECT,
-            properties: {
-              question: { type: Type.STRING },
-              referenceAnswer: { type: Type.STRING },
-              keyPoints: { type: Type.ARRAY, items: { type: Type.STRING } }
+            type: Type.ARRAY,
+            items: {
+              type: Type.OBJECT,
+              properties: {
+                text: { type: Type.STRING },
+                difficulty: { type: Type.STRING },
+                referenceAnswer: { type: Type.STRING },
+                keyPoints: { type: Type.ARRAY, items: { type: Type.STRING } }
+              }
             }
           }
         }
       });
 
-      const data = JSON.parse(response.text || "{}");
-      if (data.question) {
-        const resumeQuestion: Question = {
-          id: 888, // Special ID for resume questions
-          text: data.question,
-          difficulty: "Medium",
-          referenceAnswer: data.referenceAnswer,
-          keyPoints: data.keyPoints,
+      const data = JSON.parse(response.text || "[]");
+      if (Array.isArray(data) && data.length > 0) {
+        questions = data.map((q: any, idx: number) => ({
+          ...q,
+          id: 7000 + idx, // Unique range for generated questions
           maxScore: 10
-        };
-        // Inject at the beginning
-        questions.unshift(resumeQuestion);
+        }));
+        
+        // Store for sequential retrieval in submitAnswer
+        sessionStorage.setItem('current_interview_questions', JSON.stringify(questions));
       }
     } catch (err) {
-      console.error("Failed to generate resume question:", err);
+      console.error("Failed to generate domain questions:", err);
     }
   }
 
-  // Fallback to a default question if no questions
+  // 3. Last fallback (should rarely be hit if AI is working)
   if (questions.length === 0) {
     questions = [{
       id: 999,
@@ -231,9 +237,19 @@ export const submitAnswer = async (
     if (candidate.jobPostId) {
       const job = StorageService.getJobById(candidate.jobPostId);
       if (job) allQuestions = job.questions;
+    } else {
+      // Check for AI-generated questions in session storage
+      const cached = sessionStorage.getItem('current_interview_questions');
+      if (cached) {
+        try {
+          allQuestions = JSON.parse(cached);
+        } catch (e) {
+          console.error("Failed to parse cached questions", e);
+        }
+      }
     }
 
-    // If fallback was used (no job ID), we have no next question
+    // Find the current question's index and get the next one
     if (allQuestions.length > 0) {
       const currentIndex = allQuestions.findIndex(q => q.id === currentQuestion.id);
       if (currentIndex >= 0 && currentIndex < allQuestions.length - 1) {
