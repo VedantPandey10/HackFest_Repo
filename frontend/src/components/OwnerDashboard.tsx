@@ -80,11 +80,17 @@ export const OwnerDashboard: React.FC<OwnerDashboardProps> = ({ onLogout }) => {
   }, []);
 
   const handleAction = async (id: string, action: 'approved' | 'rejected') => {
-    await supabase
+    const { error } = await supabase
       .from('enterprise_requests')
       .update({ status: action, reviewed_at: new Date().toISOString() })
       .eq('id', id);
-    fetchData();
+
+    if (error) {
+      console.error('Error updating request:', error);
+      alert('Failed to update request. Please check permissions.');
+    } else {
+      fetchData();
+    }
   };
 
   const pending = requests.filter(r => r.status === 'pending');

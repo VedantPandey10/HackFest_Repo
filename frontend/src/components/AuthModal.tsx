@@ -91,6 +91,22 @@ export const AuthModal: React.FC<AuthModalProps> = ({ initialMode, onClose, onSu
 
           if (profileError) throw profileError;
 
+          // Check enterprise approval if Admin
+          if (profile.role === 'ADMIN') {
+            const { data: request, error: reqError } = await supabase
+              .from('enterprise_requests')
+              .select('status')
+              .eq('company_name', profile.company_name)
+              .order('created_at', { ascending: false })
+              .limit(1)
+              .maybeSingle();
+
+            if (!request || request.status !== 'approved') {
+              const status = request?.status || 'pending';
+              throw new Error(`Access Denied: Your enterprise registration is currently ${status}. Please contact the platform owner.`);
+            }
+          }
+
           onSuccess(profile.role === 'ADMIN' ? 'ADMIN' : 'CANDIDATE', {
             ...authData.user,
             ...profile
