@@ -54,6 +54,31 @@ export const OwnerDashboard: React.FC<OwnerDashboardProps> = ({ onLogout }) => {
 
   useEffect(() => { fetchData(); }, []);
 
+  // Refetch data when switching to relevant tabs
+  useEffect(() => {
+    if (tab === 'REQUESTS' || tab === 'DASHBOARD' || tab === 'AUDIT') {
+      fetchData();
+    }
+  }, [tab]);
+
+  // Real-time subscription for enterprise requests
+  useEffect(() => {
+    const channel = supabase
+      .channel('enterprise_requests_changes')
+      .on('postgres_changes', { 
+        event: '*', 
+        schema: 'public', 
+        table: 'enterprise_requests' 
+      }, () => {
+        fetchData();
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
   const handleAction = async (id: string, action: 'approved' | 'rejected') => {
     await supabase
       .from('enterprise_requests')
