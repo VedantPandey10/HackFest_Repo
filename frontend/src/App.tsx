@@ -9,7 +9,8 @@ import { AdminDashboard } from './components/AdminDashboard';
 import { MainLayout } from './components/MainLayout';
 import { SidebarView } from './components/Sidebar';
 import { UserDashboard } from './components/UserDashboard';
-// Owner portal is now external at https://owner.reincrew.ai
+import { OwnerDashboard } from './components/OwnerDashboard';
+import { OwnerLoginPage } from './components/OwnerLoginPage';
 import { ReportsScreen } from './components/ReportsScreen';
 import { AnalyticsScreen } from './components/AnalyticsScreen';
 import { ProfileSetup } from './components/ProfileSetup';
@@ -148,7 +149,7 @@ export default function App() {
   };
 
   const handleOwnerLogin = () => {
-    window.open('https://owner.reincrew.ai', '_blank');
+    navigateTo(AppView.OWNER_LOGIN);
   };
 
   return (
@@ -281,7 +282,20 @@ export default function App() {
           </motion.div>
         )}
 
-        {/* Owner portal is now external at https://owner.reincrew.ai */}
+        {view === AppView.OWNER_LOGIN && (
+          <motion.div key="owner-login" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="h-full w-full">
+            <OwnerLoginPage
+              onSuccess={() => navigateTo(AppView.OWNER)}
+              onBack={() => navigateTo(AppView.HOME)}
+            />
+          </motion.div>
+        )}
+
+        {view === AppView.OWNER && (
+          <motion.div key="owner-dash" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="h-full w-full">
+            <OwnerDashboard onLogout={() => navigateTo(AppView.HOME)} />
+          </motion.div>
+        )}
 
         {view === AppView.ADMIN && isAdminAuthenticated && (
           <motion.div 
