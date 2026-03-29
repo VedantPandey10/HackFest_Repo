@@ -19,6 +19,7 @@ import { EnterpriseRegistrationModal } from './components/EnterpriseRegistration
 import { UploadedDocuments } from './components/UploadedDocuments';
 import { Candidate, EvaluationResult, WarningEvent } from './types';
 import { StorageService } from './services/storageService';
+import { supabase } from './services/supabaseClient';
 import { useTheme } from './context/ThemeContext';
 
 enum AppView {
@@ -141,7 +142,32 @@ export default function App() {
 
   return (
     <div className="min-h-screen w-full flex flex-col font-sans transition-colors duration-300 bg-bg-main text-text-main">
+      {/* AnimatePresence for view transitions */}
       <AnimatePresence mode="wait">
+        {!supabase && (
+          <div className="fixed inset-0 z-[9999] bg-slate-900 flex items-center justify-center p-6 text-center">
+            <div className="max-w-md w-full p-8 bg-slate-800 rounded-2xl border border-red-500/30 shadow-2xl shadow-red-500/10">
+              <h2 className="text-2xl font-black text-white mb-4 uppercase tracking-tighter shimmer-text">Configuration Required</h2>
+              <p className="text-slate-400 mb-6 font-medium leading-relaxed">
+                Reicrew AI is running, but the <span className="text-indigo-400">Supabase environment variables</span> are missing or incorrect on Vercel.
+              </p>
+              <div className="bg-black/40 p-4 rounded-xl text-left border border-white/5 mb-8">
+                <code className="text-xs text-indigo-300 block mb-2 opacity-70">Check Vercel Project Settings for:</code>
+                <ul className="text-[11px] font-bold text-slate-500 space-y-1">
+                  <li>• VITE_SUPABASE_URL</li>
+                  <li>• VITE_SUPABASE_ANON_KEY</li>
+                </ul>
+              </div>
+              <button 
+                onClick={() => window.location.reload()}
+                className="w-full py-3 bg-indigo-600 text-white rounded-full font-black uppercase text-xs tracking-widest hover:bg-indigo-700 transition-all"
+              >
+                Re-check Configuration
+              </button>
+            </div>
+          </div>
+        )}
+
         {view === AppView.HOME && (
           <motion.div 
             key="home"
