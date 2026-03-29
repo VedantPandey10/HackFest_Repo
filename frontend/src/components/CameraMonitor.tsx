@@ -392,7 +392,7 @@ export const CameraMonitor: React.FC<CameraMonitorProps> = ({
           autoPlay
           playsInline
           muted
-          className={`w-full h-full object-cover transform scale-x-[-1] transition-opacity duration-300 ${isLocked ? 'opacity-20 grayscale' : 'opacity-100'}`}
+          className={`w-full h-full object-cover transition-opacity duration-300 ${isLocked ? 'opacity-20 grayscale' : 'opacity-100'}`}
         />
 
         {isLocked && (

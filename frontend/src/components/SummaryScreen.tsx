@@ -532,7 +532,7 @@ export const SummaryScreen: React.FC<SummaryScreenProps> = ({ candidate, results
                                             { label: 'Content', score: r.contentScore, color: '#818cf8', icon: '📚' },
                                             { label: 'Grammar', score: r.grammarScore, color: '#22d3ee', icon: '✍️' },
                                             { label: 'Fluency', score: r.fluencyScore, color: '#fbbf24', icon: '🗣️' },
-                                            { label: 'Visual', score: r.confidenceScore, color: '#34d399', icon: '👁️' },
+                                            { label: 'Visual', score: Math.round(r.confidenceScore / 10), color: '#34d399', icon: '👁️' },
                                         ].map(s => (
                                             <div key={s.label} className="bg-slate-50/50 dark:bg-white/5 p-5 rounded-3xl text-center border border-slate-100 dark:border-white/5 group hover:bg-white dark:hover:bg-white/10 transition-all">
                                                 <span className="block text-[9px] font-black text-slate-400 dark:text-slate-500 uppercase tracking-[0.2em] mb-3">{s.label}</span>

@@ -132,7 +132,27 @@ export default function App() {
 
   const handleInterviewComplete = (finalResults: EvaluationResult[], warnings: WarningEvent[], status: 'COMPLETED' | 'TERMINATED') => {
     setResults(finalResults);
-    setSessionScore(85); // Placeholder for now
+    
+    // Calculate overall score from actual evaluation results
+    if (finalResults.length > 0) {
+      const avgContent = finalResults.reduce((s, r) => s + r.contentScore, 0) / finalResults.length;
+      const avgGrammar = finalResults.reduce((s, r) => s + r.grammarScore, 0) / finalResults.length;
+      const avgFluency = finalResults.reduce((s, r) => s + r.fluencyScore, 0) / finalResults.length;
+      const avgConfidence = finalResults.reduce((s, r) => s + r.confidenceScore, 0) / finalResults.length;
+      
+      // Weighted: Content 40%, Grammar 20%, Fluency 20%, Visual 20%
+      // Content/Grammar/Fluency are 0-10 (multiply by 10), Confidence is 0-100
+      const score = Math.round(
+        (avgContent * 10) * 0.4 +
+        (avgGrammar * 10) * 0.2 +
+        (avgFluency * 10) * 0.2 +
+        avgConfidence * 0.2
+      );
+      setSessionScore(Math.min(100, Math.max(0, score)));
+    } else {
+      setSessionScore(0);
+    }
+    
     setInterviewStep('SUMMARY');
   };
 

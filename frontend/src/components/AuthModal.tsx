@@ -52,6 +52,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({ initialMode, onClose, onSu
         const { data: authData, error: authError } = await supabase.auth.signUp({
           email: formData.email,
           password: formData.password,
+          options: {
+            data: {
+              full_name: formData.name || '',
+              role: isCandidate ? 'candidate' : 'ADMIN',
+              position: formData.position || ''
+            }
+          }
         });
 
         if (authError) throw authError;
@@ -62,17 +69,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ initialMode, onClose, onSu
         }
       } else {
         // --- LOGIN ---
-        // Support email or username for admin login by first checking if email-like
-        let loginEmail = formData.email;
-        if (isAdmin && !formData.email.includes('@')) {
-           // If it's a username, we'd need to look up the email first
-           const { data: profile, error: pe } = await supabase
-            .from('profiles')
-            .select('email')
-            .eq('username', formData.email)
-            .single();
-           if (profile) loginEmail = profile.email;
-        }
+        const loginEmail = formData.email.trim();
 
         const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
           email: loginEmail,
@@ -96,7 +93,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ initialMode, onClose, onSu
             const { data: request, error: reqError } = await supabase
               .from('enterprise_requests')
               .select('status')
-              .eq('company_name', profile.company_name)
+              .eq('email', profile.email)
               .order('created_at', { ascending: false })
               .limit(1)
               .maybeSingle();
@@ -188,11 +185,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({ initialMode, onClose, onSu
             
             {(mode === 'ADMIN_LOGIN') && (
               <input 
-                placeholder="Username or Email"
+                type="email"
+                placeholder="Admin Email"
                 required
                 className="w-full h-14 bg-blue-100/50 dark:bg-white/5 border border-blue-200/50 dark:border-white/10 rounded-2xl px-6 text-sm outline-none focus:border-indigo-500 text-slate-900 dark:text-white transition-all font-medium"
-                value={formData.username || formData.email}
-                onChange={e => setFormData({ ...formData, username: e.target.value, email: e.target.value })}
+                value={formData.email}
+                onChange={e => setFormData({ ...formData, email: e.target.value })}
               />
             )}
 
