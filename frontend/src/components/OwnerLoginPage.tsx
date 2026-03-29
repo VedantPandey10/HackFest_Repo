@@ -9,8 +9,8 @@ interface OwnerLoginPageProps {
 }
 
 // Matches the .NET portal credentials from appsettings.json
-const OWNER_USERNAME = 'owner';
-const OWNER_PASSWORD = 'password123';
+const OWNER_USERNAME = 'reincrew.ai@gmail.com';
+const OWNER_PASSWORD = 'Owner123!';
 
 export const OwnerLoginPage: React.FC<OwnerLoginPageProps> = ({ onSuccess, onBack }) => {
   const [username, setUsername] = useState('');
