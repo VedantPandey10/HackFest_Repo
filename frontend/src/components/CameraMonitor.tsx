@@ -10,6 +10,7 @@ interface CameraMonitorProps {
   isLocked: boolean;
   onStreamReady?: () => void;
   sensitivity?: 'Low' | 'Medium' | 'High';
+  isAgentSpeaking?: boolean;
   proctoringSettings?: {
     eyeTracking: boolean;
     multiFace: boolean;
@@ -22,6 +23,7 @@ export const CameraMonitor: React.FC<CameraMonitorProps> = ({
   isLocked,
   onStreamReady,
   sensitivity = 'Medium',
+  isAgentSpeaking = false,
   proctoringSettings
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -120,6 +122,11 @@ export const CameraMonitor: React.FC<CameraMonitorProps> = ({
           height: { ideal: 480 },
           frameRate: { ideal: 30 },
           facingMode: { ideal: "user" }
+        },
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true
         }
       });
       if (videoRef.current) {
@@ -239,13 +246,13 @@ export const CameraMonitor: React.FC<CameraMonitorProps> = ({
     const mouthClose = getBlendshape('mouthClose');
     const mouthPucker = getBlendshape('mouthPucker');
     const lipActivity = jawOpen + (1 - mouthClose) + mouthPucker;
-    const isTalking = lipActivity > 0.6;
+    const isTalking = lipActivity > 0.85; // Increased threshold to filter subtle movement/background noise
 
-    if (isTalking) {
+    if (isTalking && !isAgentSpeaking) { // Safe-zone: Skip talking detection while AI is asking a question
       talkingFramesRef.current += 1;
-      if (talkingFramesRef.current > 60) { // ~2s sustained talking
+      if (talkingFramesRef.current > 90) { // ~3s sustained talking
         attemptTriggerWarning("Suspicious lip movement detected! No talking allowed.");
-        talkingFramesRef.current = 30; // Reset partially to avoid spam
+        talkingFramesRef.current = 45; // Reset partially to avoid spam
       }
     } else {
       talkingFramesRef.current = Math.max(0, talkingFramesRef.current - 1);

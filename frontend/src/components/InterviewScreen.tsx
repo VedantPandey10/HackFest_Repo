@@ -544,6 +544,7 @@ export const InterviewScreen: React.FC<InterviewScreenProps> = ({ candidate, onC
               isLocked={false}
               onStreamReady={handleCameraStreamReady}
               sensitivity={settings?.proctoring.sensitivity || 'Medium'}
+              isAgentSpeaking={isSpeaking}
               proctoringSettings={candidate.proctoringSettings}
             />
             {/* Visual HUD overlay */}
