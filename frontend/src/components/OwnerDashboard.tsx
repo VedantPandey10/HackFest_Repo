@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import {
   Building2, Users, Clock, CheckCircle2, XCircle, Mail, UserCircle,
   LogOut, Inbox, LayoutDashboard, FileText, History, BrainCircuit,
-  TrendingUp, Shield, Activity, ChevronRight
+  TrendingUp, Shield, Activity, ChevronRight, Settings, Database, ExternalLink
 } from 'lucide-react';
 import { supabase } from '../services/supabaseClient';
 
@@ -27,7 +27,7 @@ interface Profile {
   created_at: string;
 }
 
-type OwnerTab = 'DASHBOARD' | 'REQUESTS' | 'AUDIT';
+type OwnerTab = 'DASHBOARD' | 'REQUESTS' | 'AUDIT' | 'SETTINGS';
 
 interface OwnerDashboardProps {
   onLogout: () => void;
@@ -39,6 +39,7 @@ export const OwnerDashboard: React.FC<OwnerDashboardProps> = ({ onLogout }) => {
   const [requests, setRequests] = useState<EnterpriseRequest[]>([]);
   const [profiles, setProfiles] = useState<Profile[]>([]);
   const [loading, setLoading] = useState(true);
+  const [poolSize, setPoolSize] = useState(15);
 
   const fetchData = async () => {
     setLoading(true);
@@ -72,6 +73,7 @@ export const OwnerDashboard: React.FC<OwnerDashboardProps> = ({ onLogout }) => {
     { id: 'DASHBOARD' as OwnerTab, label: 'Dashboard', icon: LayoutDashboard },
     { id: 'REQUESTS' as OwnerTab, label: 'Requests', icon: FileText, badge: pending.length },
     { id: 'AUDIT' as OwnerTab, label: 'Customer Audit', icon: History },
+    { id: 'SETTINGS' as OwnerTab, label: 'Database', icon: Database },
   ];
 
   return (
@@ -402,6 +404,111 @@ export const OwnerDashboard: React.FC<OwnerDashboardProps> = ({ onLogout }) => {
                     </motion.div>
                   ))
                 )}
+              </div>
+            </motion.div>
+          )}
+
+          {tab === 'SETTINGS' && (
+            <motion.div key="settings" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="p-10 max-w-4xl mx-auto">
+              <div className="mb-12">
+                <h1 className="text-4xl font-black tracking-tighter text-white mb-2">Project Settings</h1>
+                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-500">Database & Connection Management</p>
+              </div>
+
+              {/* Connection Poolers Card */}
+              <div className="bg-[#111111] border border-white/10 rounded-2xl overflow-hidden shadow-2xl">
+                <div className="p-8 pb-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <h2 className="text-lg font-bold text-white flex items-center gap-2">
+                      Connection poolers
+                    </h2>
+                    <span className="px-2 py-0.5 rounded bg-white/5 border border-white/10 text-[9px] font-black tracking-widest text-slate-500 uppercase">Shared</span>
+                  </div>
+                  <p className="text-sm text-slate-400 mb-8">Configuration is shared across all connection poolers.</p>
+
+                  <div className="space-y-10">
+                    {/* Pool Size Section */}
+                    <div className="flex flex-col md:flex-row md:items-start gap-6">
+                      <div className="flex-1">
+                        <label className="block text-sm font-bold text-white mb-1">Connection pool size</label>
+                        <p className="text-xs text-slate-500 leading-relaxed mb-1">
+                          The maximum number of connections made to the underlying Postgres cluster, per user+db combination.
+                        </p>
+                        <p className="text-xs text-slate-500 leading-relaxed">
+                          Pool size has a default of 15 based on your compute size of Nano.
+                        </p>
+                      </div>
+                      <div className="w-full md:w-64">
+                        <div className="flex items-center bg-[#0a0a0a] border border-white/10 rounded-lg overflow-hidden focus-within:border-indigo-500/50 transition-colors">
+                          <input 
+                            type="number" 
+                            value={poolSize}
+                            onChange={(e) => setPoolSize(parseInt(e.target.value) || 0)}
+                            className="flex-1 bg-transparent px-4 py-2.5 text-sm font-bold text-white outline-none" 
+                          />
+                          <div className="px-4 py-2.5 bg-white/5 border-l border-white/10 text-[10px] font-black uppercase tracking-widest text-slate-500">
+                            Connections
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="h-px bg-white/5" />
+
+                    {/* Max Client Connections Section */}
+                    <div className="flex flex-col md:flex-row md:items-start gap-6 pb-4">
+                      <div className="flex-1">
+                        <label className="block text-sm font-bold text-white mb-1">Max client connections</label>
+                        <p className="text-xs text-slate-500 leading-relaxed mb-1">
+                          The maximum number of concurrent client connections allowed. This value is fixed at 200 based on your compute size of Nano and cannot be changed.
+                        </p>
+                        <a href="#" className="text-xs text-indigo-400 hover:text-indigo-300 font-bold inline-flex items-center gap-1 mt-1 transition-colors">
+                          Learn more <ExternalLink size={12} />
+                        </a>
+                      </div>
+                      <div className="w-full md:w-64">
+                        <div className="flex items-center bg-[#1a1a1a] border border-white/5 rounded-lg overflow-hidden cursor-not-allowed">
+                          <input 
+                            disabled
+                            type="text" 
+                            value="200"
+                            className="flex-1 bg-transparent px-4 py-2.5 text-sm font-bold text-slate-500 outline-none cursor-not-allowed" 
+                          />
+                          <div className="px-4 py-2.5 bg-white/[0.02] border-l border-white/10 text-[10px] font-black uppercase tracking-widest text-slate-600">
+                            Clients
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Footer Buttons */}
+                <div className="bg-white/[0.02] p-6 border-t border-white/10 flex justify-end gap-3">
+                  <button onClick={() => setTab('DASHBOARD')} className="px-5 py-2.5 rounded-lg text-xs font-black uppercase tracking-widest text-slate-500 hover:text-white hover:bg-white/5 transition-all">
+                    Cancel
+                  </button>
+                  <button 
+                    onClick={() => {
+                      alert('Connection pool settings updated successfully.');
+                      setTab('DASHBOARD');
+                    }}
+                    className="px-6 py-2.5 bg-[#10b981]/10 text-[#10b981] border border-[#10b981]/20 rounded-lg text-xs font-black uppercase tracking-widest hover:bg-[#10b981] hover:text-white transition-all shadow-lg shadow-emerald-500/10"
+                  >
+                    Save
+                  </button>
+                </div>
+              </div>
+
+              {/* Bottom Tip */}
+              <div className="mt-8 p-6 bg-indigo-500/5 border border-indigo-500/10 rounded-2xl flex items-start gap-4">
+                <BrainCircuit className="text-indigo-400 shrink-0" size={20} />
+                <div>
+                  <h4 className="text-xs font-black uppercase tracking-widest text-indigo-400 mb-1">Optimization Note</h4>
+                  <p className="text-[11px] text-slate-400 leading-relaxed">
+                    Higher connection counts consume more RAM. For Nano instances, we recommend keeping the pool size stable to avoid out-of-memory errors during concurrent peaks.
+                  </p>
+                </div>
               </div>
             </motion.div>
           )}
