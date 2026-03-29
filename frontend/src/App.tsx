@@ -9,8 +9,7 @@ import { AdminDashboard } from './components/AdminDashboard';
 import { MainLayout } from './components/MainLayout';
 import { SidebarView } from './components/Sidebar';
 import { UserDashboard } from './components/UserDashboard';
-import { OwnerDashboard } from './components/OwnerDashboard';
-import { OwnerLoginPage } from './components/OwnerLoginPage';
+// Owner portal is now external at https://owner.reincrew.ai
 import { ReportsScreen } from './components/ReportsScreen';
 import { AnalyticsScreen } from './components/AnalyticsScreen';
 import { ProfileSetup } from './components/ProfileSetup';
@@ -148,6 +147,10 @@ export default function App() {
     setView(AppView.LANDING);
   };
 
+  const handleOwnerLogin = () => {
+    window.open('https://owner.reincrew.ai', '_blank');
+  };
+
   return (
     <div className="min-h-screen w-full flex flex-col font-sans transition-colors duration-300 bg-bg-main text-text-main">
       {/* AnimatePresence for view transitions */}
@@ -187,7 +190,7 @@ export default function App() {
             <HomePage 
               onGoToLanding={() => navigateTo(AppView.LANDING)} 
               onEnterpriseCTA={() => setShowEnterpriseModal(true)}
-              onOwnerLogin={() => navigateTo(AppView.OWNER_LOGIN)}
+              onOwnerLogin={handleOwnerLogin}
             />
           </motion.div>
         )}
@@ -278,20 +281,7 @@ export default function App() {
           </motion.div>
         )}
 
-        {view === AppView.OWNER_LOGIN && (
-          <motion.div 
-            key="owner-login"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="h-full w-full"
-          >
-            <OwnerLoginPage 
-              onSuccess={handleAuthSuccess as any} 
-              onBack={() => navigateTo(AppView.HOME)} 
-            />
-          </motion.div>
-        )}
+        {/* Owner portal is now external at https://owner.reincrew.ai */}
 
         {view === AppView.ADMIN && isAdminAuthenticated && (
           <motion.div 
