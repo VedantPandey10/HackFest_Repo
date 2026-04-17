@@ -146,31 +146,62 @@ export default function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [proctoringSettings]);
 
-  const handleInterviewComplete = (finalResults: EvaluationResult[], warnings: WarningEvent[], status: 'COMPLETED' | 'TERMINATED') => {
+  const handleInterviewComplete = async (finalResults: EvaluationResult[], warnings: WarningEvent[], status: 'COMPLETED' | 'TERMINATED') => {
     setResults(finalResults);
+    let finalScore = 0;
     
-    // Calculate overall score from actual evaluation results
+    // Calculate base score from evaluation results
     if (finalResults.length > 0) {
       const avgContent = finalResults.reduce((s, r) => s + r.contentScore, 0) / finalResults.length;
       const avgGrammar = finalResults.reduce((s, r) => s + r.grammarScore, 0) / finalResults.length;
       const avgFluency = finalResults.reduce((s, r) => s + r.fluencyScore, 0) / finalResults.length;
       const avgConfidence = finalResults.reduce((s, r) => s + r.confidenceScore, 0) / finalResults.length;
       
-      // Weighted: Content 40%, Grammar 20%, Fluency 20%, Visual 20%
-      // Content/Grammar/Fluency are 0-10 (multiply by 10), Confidence is 0-100
-      const score = Math.round(
+      // Base Score (0-100)
+      const baseScore = Math.round(
         (avgContent * 10) * 0.4 +
         (avgGrammar * 10) * 0.2 +
         (avgFluency * 10) * 0.2 +
         avgConfidence * 0.2
       );
-      setSessionScore(Math.min(100, Math.max(0, score)));
+
+      // Apply penalties: 2% deduction per violation/warning
+      const totalPenalties = warnings.length * 2;
+      finalScore = Math.max(0, baseScore - totalPenalties);
+      setSessionScore(finalScore);
     } else {
       setSessionScore(0);
     }
     
+    // Save session to Supabase
+    if (candidate) {
+      const session: any = {
+        id: crypto.randomUUID(),
+        candidateId: candidate.id,
+        candidate_id: candidate.id, // Support both formats for flexibility
+        candidate: candidate,
+        date: new Date().toISOString(),
+        status: status,
+        overallScore: finalScore,
+        overall_score: finalScore,
+        results: finalResults,
+        warnings: warnings,
+        violationCount: warnings.length,
+        disqualified: finalScore < 45,
+        durationSeconds: 0 // Could calc this if needed
+      };
+
+      try {
+        await StorageService.saveSession(session);
+        console.log(`[App] Session saved successfully. Final Score: ${finalScore}% | DQ: ${finalScore < 45}`);
+      } catch (err) {
+        console.error("[App] Failed to save session:", err);
+      }
+    }
+
     setInterviewStep('SUMMARY');
   };
+
 
   const handleRestart = (fullReset: boolean) => {
     if (fullReset) {
@@ -289,7 +320,8 @@ export default function App() {
                   />
                 )}
                 {sidebarView === 'INTERVIEW_FLOW' && (
-                  <div className="h-full p-6">
+                  <div className="h-full p-6 overflow-y-auto">
+
                     {interviewStep === 'PROFILE_SETUP' && candidate && (
                       <ProfileSetup
                         initialData={candidate}

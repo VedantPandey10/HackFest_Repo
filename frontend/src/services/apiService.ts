@@ -85,19 +85,21 @@ const extractJSON = (raw: string): string => {
 
 // ── Build Gemini contents based on resume type ────────────────────────────────
 const buildContents = (position: string, resumeText?: string) => {
+  const sessionEntropy = Date.now().toString().slice(-4);
   const questionPromptSuffix = `
 POSITION APPLIED FOR: ${position}
+SESSION ID: ${sessionEntropy}
 
-TASK: Generate exactly 5 interview questions.
+TASK: Generate a pool of 12 interview questions.
 
 STRICT RULES:
 1. Read the resume CAREFULLY. Base questions DIRECTLY on:
    - Specific technologies, languages, and frameworks mentioned
    - Projects the candidate has worked on (ask about architecture, challenges, outcomes)
    - Work experience and roles listed
-   - Skills and certifications found in the resume
-2. Progress difficulty: Q1 Easy-Medium, Q2 Medium, Q3 Hard, Q4 Hard, Q5 Very Hard.
+2. Ensure at least: 4 Easy/Medium, 4 Hard, 4 Very Hard questions.
 3. Questions must require detailed technical explanations — no yes/no answers.
+
 4. Include questions about:
    - Technical implementation of specific projects from the resume
    - Technology choices and trade-offs they have made
@@ -204,22 +206,50 @@ const generateQuestionsWithAI = async (candidate: Candidate): Promise<Question[]
     throw new Error("AI returned empty or invalid data");
   }
 
-  const questions: Question[] = data.slice(0, 5).map((q: any, idx: number) => ({
-    id: 8000 + idx,
+  // 1. Map all generated questions from the pool
+  const pool: Question[] = data.map((q: any, idx: number) => ({
+    id: 10000 + idx + Math.floor(Math.random() * 1000),
     text: String(q.text || "").trim(),
-    difficulty: String(q.difficulty || "Medium"),
+    difficulty: (String(q.difficulty || "Medium") as any),
     topic: String(q.topic || "General"),
     referenceAnswer: String(q.referenceAnswer || ""),
     keyPoints: Array.isArray(q.keyPoints) ? q.keyPoints.map(String) : [],
     maxScore: 10
   }));
 
-  console.log(`[AI] ✅ Generated ${questions.length} questions from ${hasPdf ? 'PDF resume' : hasText ? 'text resume' : 'no resume'}`);
-  console.log('[AI] Q1:', questions[0]?.text?.substring(0, 100));
-  console.log('[AI] Q2:', questions[1]?.text?.substring(0, 100));
+  const selectRandom = (arr: any[], count: number) => {
+    const shuffled = [...arr].sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, count);
+  };
 
-  return questions;
+  // 2. Sequential Selection to guarantee uniqueness across levels
+  const finalSelected: Question[] = [];
+  
+  const getFromPool = (criteria: (q: Question) => boolean, count: number) => {
+    const available = pool.filter(q => criteria(q) && !finalSelected.find(s => s.id === q.id));
+    const chosen = selectRandom(available.length > 0 ? available : pool.filter(q => !finalSelected.find(s => s.id === q.id)), count);
+    finalSelected.push(...chosen);
+  };
+
+  // Pick 1 Easy/Med, 2 Hard, 2 Very Hard
+  getFromPool(q => q.difficulty === 'Easy' || q.difficulty === 'Medium', 1);
+  getFromPool(q => q.difficulty === 'Hard', 2);
+  getFromPool(q => q.difficulty === 'Very Hard', 2);
+
+  const selectedQuestions = finalSelected.slice(0, 5);
+
+
+  // 3. Final Shuffle to avoid predictable order within tiers
+  const finalQuestions = selectedQuestions.sort(() => 0.5 - Math.random()).map((q, idx) => ({
+    ...q,
+    id: 8000 + idx // Standardized IDs for the session
+  }));
+
+
+  console.log(`[AI] ✅ Randomly selected ${finalQuestions.length} questions from pool of ${pool.length}`);
+  return finalQuestions;
 };
+
 
 // ── startInterview — generates all questions upfront and caches them ──────────
 export const startInterview = async (candidate: Candidate): Promise<{

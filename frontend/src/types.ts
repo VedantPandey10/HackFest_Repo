@@ -31,7 +31,7 @@ export interface Question {
   id: number;
   text: string;
   topic?: string;
-  difficulty?: 'Easy' | 'Medium' | 'Hard';
+  difficulty?: 'Very Easy' | 'Easy' | 'Medium' | 'Hard' | 'Very Hard';
   referenceAnswer?: string; // HR's ideal answer
   keyPoints?: string[]; // Specific concepts to hit
   maxScore?: number; // Default 10
@@ -99,6 +99,8 @@ export interface InterviewSession {
   overallScore: number; // 0-100
   results: EvaluationResult[];
   warnings: WarningEvent[];
+  disqualified?: boolean;
+  violationCount?: number;
   durationSeconds: number;
 }
 

@@ -1,8 +1,9 @@
 "use client"
 
-import { motion, MotionStyle, Transition } from "motion/react"
+import { motion, MotionStyle, Transition } from "framer-motion"
 
-import { cn } from "@/lib/utils"
+const cn = (...classes: (string | undefined | null | boolean)[]) => classes.filter(Boolean).join(' ');
+
 
 interface BorderBeamProps {
   /**

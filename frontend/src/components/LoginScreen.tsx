@@ -27,11 +27,13 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onStart, onAdminLogin 
     const selectedJob = jobs.find(j => j.id === selectedJobId);
 
     onStart({
+      id: Date.now(),
       name: name.trim() || 'Candidate',
       position: selectedJob?.title || 'General Applicant',
       company: 'N/A',
       jobPostId: selectedJobId
     });
+
   };
 
   return (

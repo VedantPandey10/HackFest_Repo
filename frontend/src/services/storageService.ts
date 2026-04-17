@@ -5,8 +5,10 @@ import { supabase } from "./supabaseClient";
 const SESSIONS_KEY = 'reicrew_sessions_v2';
 const CONFIG_KEY = 'reicrew_config_v2';
 const JOBS_KEY = 'reicrew_jobs_v2';
+const ADMIN_KEY = 'reicrew_admins_v2';
 
 const DEFAULT_SETTINGS: RoleSettings = {
+
   difficulty: 'Medium',
   preset: 'Normal',
   weights: {
@@ -122,6 +124,21 @@ const DEFAULT_CONFIG: AdminConfig = {
 
 export const StorageService = {
   // --- Sessions (Database) ---
+
+  registerAdmin: (username: string, pass: string): boolean => {
+    const stored = localStorage.getItem(ADMIN_KEY);
+    const admins = stored ? JSON.parse(stored) : [{ u: 'admin', p: 'admin123' }];
+    if (admins.find((a: any) => a.u === username)) return false;
+    admins.push({ u: username, p: pass });
+    localStorage.setItem(ADMIN_KEY, JSON.stringify(admins));
+    return true;
+  },
+
+  verifyAdmin: (username: string, pass: string): boolean => {
+    const stored = localStorage.getItem(ADMIN_KEY);
+    const admins = stored ? JSON.parse(stored) : [{ u: 'admin', p: 'admin123' }];
+    return !!admins.find((a: any) => a.u === username && a.p === pass);
+  },
 
   getSessionsApi: async (candidateId?: number): Promise<InterviewSession[]> => {
     try {

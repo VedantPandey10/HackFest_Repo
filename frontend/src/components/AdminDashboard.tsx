@@ -283,7 +283,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
     );
 
     return (
-        <div className="h-full w-full flex bg-bg-main overflow-hidden font-sans text-text-main transition-colors duration-300">
+        <div className="h-full w-full flex bg-bg-main overflow-y-auto font-sans text-text-main transition-colors duration-300">
+
             {/* Sidebar */}
             <aside className="w-72 bg-bg-main flex flex-col shrink-0 border-r border-slate-200 dark:border-white/5 transition-colors z-50">
                 <div className="h-20 px-8 flex items-center gap-4 border-b border-slate-200 dark:border-white/5 bg-slate-100 dark:bg-white/5">

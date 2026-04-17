@@ -181,12 +181,13 @@ export const ProfileSetup: React.FC<ProfileSetupProps> = ({ initialData, onCompl
   };
 
   return (
-    <div className="h-full w-full flex items-center justify-center p-4 transition-colors duration-300 relative overflow-hidden">
+    <div className="min-h-full w-full flex items-center justify-center p-4 transition-colors duration-300 relative overflow-y-auto">
+
       {/* Background Blobs */}
       <div className="absolute top-[-20%] right-[-10%] w-[50%] h-[50%] bg-brand-500/10 blur-[120px] rounded-full animate-morph"></div>
       <div className="absolute bottom-[-20%] left-[-10%] w-[50%] h-[50%] bg-emerald-500/10 blur-[120px] rounded-full animate-morph-fast"></div>
 
-      <div className="w-full max-w-5xl h-fit max-h-[90vh] glass-card bg-white/60 dark:bg-slate-900/60 rounded-[2.5rem] shadow-2xl overflow-hidden border border-white/40 dark:border-white/5 flex flex-col md:flex-row animate-fade-in z-10 transition-colors">
+      <div className="w-full max-w-5xl h-fit max-h-[90vh] glass-card bg-white/60 dark:bg-slate-900/60 rounded-[2.5rem] shadow-2xl overflow-hidden border border-white/40 dark:border-white/5 flex flex-col md:flex-row animate-fade-in z-10 transition-colors overflow-y-auto">
 
         {/* Left Side: Info & Privacy */}
         <div className="hidden md:flex w-1/3 bg-gradient-to-b from-slate-900 to-slate-950 dark:from-slate-950 dark:to-black text-slate-300 p-10 flex-col justify-between overflow-y-auto relative">
@@ -462,7 +463,7 @@ export const ProfileSetup: React.FC<ProfileSetupProps> = ({ initialData, onCompl
           </div>
 
           {/* Fixed Footer */}
-          <div className="p-8 border-t border-slate-100 dark:border-slate-800 bg-white/30 dark:bg-slate-900/30 backdrop-blur-sm shrink-0">
+          <div className="p-8 bg-white/30 dark:bg-slate-900/30 backdrop-blur-sm shrink-0">
             <button
               type="submit"
               form="profile-form"

@@ -90,18 +90,14 @@ export const InterviewScreen: React.FC<InterviewScreenProps> = ({ candidate, onC
   }, []);
 
   const handleLockdownTerminate = useCallback(() => {
-    if (statusRef.current === InterviewStatus.LOCKED) return;
-
-    statusRef.current = InterviewStatus.LOCKED;
-    setStatus(InterviewStatus.LOCKED);
-    stopListening();
-    stopSpeaking();
-    localStorage.setItem(`blocked_${candidate.accessId}`, 'true');
-
-    setTimeout(() => {
-      onComplete(results, warningLogRef.current, 'TERMINATED');
-    }, 3000);
-  }, [stopListening, stopSpeaking, results, onComplete, candidate.accessId]);
+    console.warn(`[Proctoring] Critical threshold reached. Logging violation and proceeding.`);
+    warningLogRef.current.push({
+      timestamp: new Date().toISOString(),
+      type: 'FULLSCREEN_EXIT',
+      message: 'Persistent lockdown violation detected. Final score will be penalized.'
+    });
+    // NO TERMINATION — we just log and stay in IDLE or whatever current state
+  }, []);
 
   const {
     isFullscreen,
@@ -135,11 +131,15 @@ export const InterviewScreen: React.FC<InterviewScreenProps> = ({ candidate, onC
 
         await enterFullscreen();
         setStatus(InterviewStatus.LOADING_QUESTION);
+        setProcessingMsg("AI is curating your custom interview experience...");
+        
         const { question, totalQuestions, settings: loadedSettings } = await startInterview(candidate);
+        
         setCurrentQuestion(question);
         setTotalQuestions(totalQuestions);
         if (loadedSettings) setSettings(loadedSettings);
         setStatus(InterviewStatus.ASKING);
+
       };
       init();
     }
@@ -197,22 +197,12 @@ export const InterviewScreen: React.FC<InterviewScreenProps> = ({ candidate, onC
     // Play strike-intensified buzzer
     playBuzzer(warningLogRef.current.length);
 
-    const maxWarnings = settings?.proctoring.maxWarnings || 8;
-    const totalWarnings = warningLogRef.current.length;
+    // Log the warning but DO NOT terminate the interview anymore
+    // Points will be deducted at the end in App.tsx
+    console.warn(`[Proctoring] Violation ${warningLogRef.current.length}: Eye contact loss logged.`);
 
-    if (totalWarnings >= maxWarnings) {
-      statusRef.current = InterviewStatus.LOCKED;
-      setStatus(InterviewStatus.LOCKED);
-      stopListening();
-      stopSpeaking();
-      localStorage.setItem(`blocked_${candidate.accessId}`, 'true');
-      forceExitFullscreen();
+  }, [results, onComplete, candidate.accessId, settings]);
 
-      setTimeout(() => {
-        onComplete(results, warningLogRef.current, 'TERMINATED');
-      }, 3000);
-    }
-  }, [stopListening, stopSpeaking, results, onComplete, candidate.accessId, settings, forceExitFullscreen]);
 
   const handleCameraStreamReady = useCallback(() => {
     setIsCameraReady(true);
@@ -444,7 +434,7 @@ export const InterviewScreen: React.FC<InterviewScreenProps> = ({ candidate, onC
               </div>
               <h3 className="font-black text-slate-800 dark:text-white text-lg tracking-tight">Evaluation Bot</h3>
               <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
-                {status === InterviewStatus.ASKING || status === InterviewStatus.LOADING_QUESTION ? "Transmitting audio..." : "Processing audio input..."}
+                {status === InterviewStatus.LOADING_QUESTION ? "AI is ccurating questions..." : status === InterviewStatus.ASKING ? "AI Agent is speaking..." : "Processing response..."}
               </p>
             </div>
           </div>
@@ -473,7 +463,7 @@ export const InterviewScreen: React.FC<InterviewScreenProps> = ({ candidate, onC
                   <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center">
                     <Loader2 className="animate-spin text-white/50" size={32} />
                   </div>
-                  <p className="text-[10px] font-black text-white/40 uppercase tracking-widest">Generating Prompts</p>
+                  <p className="text-[10px] font-black text-white/40 uppercase tracking-widest">Randomizing AI Pool</p>
                 </div>
               )}
             </div>
