@@ -111,7 +111,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({ initialMode, onClose, onSu
         }
       }
     } catch (err: any) {
-      setError(err.message);
+      if (err.message === 'Failed to fetch') {
+        setError("Connection Failed: Unable to reach the security node. Please check your internet connection and verify the Supabase configuration in Project Settings.");
+      } else {
+        setError(err.message);
+      }
     } finally {
       setLoading(false);
     }

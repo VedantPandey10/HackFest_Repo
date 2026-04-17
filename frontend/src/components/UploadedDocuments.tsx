@@ -20,30 +20,35 @@ export const UploadedDocuments: React.FC<UploadedDocumentsProps> = ({ candidate,
       if (!onUpdateCandidate) return;
 
       if (type === 'resume') {
-        onUpdateCandidate({
-          ...candidate,
-          resumeText: result,
-          resumeFileName: file.name
-        });
+        // Persist to localStorage so resume survives re-login
+        const storageKey = `reicrew_resume_${candidate.id || candidate.email}`;
+        try {
+          localStorage.setItem(storageKey, result);
+          localStorage.setItem(`${storageKey}_name`, file.name);
+          console.log(`[Resume] Saved to localStorage: ${file.name} (${result.length} chars)`);
+        } catch (e) {
+          console.warn('[Resume] localStorage save failed (quota?)', e);
+        }
+        onUpdateCandidate({ ...candidate, resumeText: result, resumeFileName: file.name });
       } else if (type === 'pfp') {
-        onUpdateCandidate({
-          ...candidate,
-          profilePhoto: result
-        });
+        onUpdateCandidate({ ...candidate, profilePhoto: result });
       } else if (type === 'id-card') {
-        onUpdateCandidate({
-          ...candidate,
-          idCardImage: result
-        });
+        onUpdateCandidate({ ...candidate, idCardImage: result });
       }
     };
 
     if (type === 'resume') {
-      reader.readAsText(file);
+      const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+      if (isPdf) {
+        reader.readAsDataURL(file);   // → "data:application/pdf;base64,..." — Gemini reads PDFs natively
+      } else {
+        reader.readAsText(file);      // → plain text for .txt files
+      }
     } else {
       reader.readAsDataURL(file);
     }
   };
+
 
   const docs = [
     {

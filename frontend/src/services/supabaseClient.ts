@@ -11,4 +11,6 @@ export const supabase = (supabaseUrl && supabaseAnonKey)
 if (!supabase) {
   console.warn("⚠️ Reicrew AI: Supabase environment variables are missing! Registration and Login will be disabled.");
   console.log("Check Vercel Project Settings for VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.");
+} else if (supabaseUrl.includes('jkyfnylbwklaglyiwgbu')) {
+  console.error("⚠️ CRITICAL CONFIG ERROR: Detected incorrect Supabase Project ID (jkyfnylbwklaglyiwgbu). Please update your Vercel/Environment settings to the correct ID: jkyfryibwdlaqlyiugbu");
 }

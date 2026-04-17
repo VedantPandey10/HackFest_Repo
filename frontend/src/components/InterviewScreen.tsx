@@ -123,7 +123,16 @@ export const InterviewScreen: React.FC<InterviewScreenProps> = ({ candidate, onC
   useEffect(() => {
     if (isCameraReady && status === InterviewStatus.IDLE) {
       const init = async () => {
-        // Auto-enter fullscreen when interview begins
+        // Diagnostic log — check what candidate data we have
+        console.log('[Interview] Starting with candidate:', {
+          name: candidate.name,
+          position: candidate.position,
+          hasResumeText: !!candidate.resumeText,
+          resumeLength: candidate.resumeText?.length ?? 0,
+          resumePreview: candidate.resumeText?.substring(0, 100) ?? 'NONE',
+          jobPostId: candidate.jobPostId
+        });
+
         await enterFullscreen();
         setStatus(InterviewStatus.LOADING_QUESTION);
         const { question, totalQuestions, settings: loadedSettings } = await startInterview(candidate);
@@ -136,6 +145,7 @@ export const InterviewScreen: React.FC<InterviewScreenProps> = ({ candidate, onC
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isCameraReady]);
+
 
   useEffect(() => {
     if (status === InterviewStatus.ASKING && currentQuestion) {

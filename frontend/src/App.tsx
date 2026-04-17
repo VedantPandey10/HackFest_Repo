@@ -107,15 +107,30 @@ export default function App() {
       setIsAdminAuthenticated(true);
       setView(AppView.ADMIN);
     } else {
+      const candidateId = data.candidateId;
+
+      // Restore resume from localStorage (persisted from previous upload)
+      const resumeStorageKey = `reicrew_resume_${candidateId}`;
+      const savedResume     = localStorage.getItem(resumeStorageKey);
+      const savedResumeName = localStorage.getItem(`${resumeStorageKey}_name`);
+
+
       setCandidate({
-          id: data.candidateId,
-          name: data.full_name || data.name || 'Candidate',
-          email: data.email,
-          position: data.position || 'Standard Node',
-          passwordHash: 'SHA256:7B9A2C...F310',
-          plan: 'Professional Node',
-          proctoringSettings: { ...proctoringSettings }
+        id: candidateId,
+        name: data.full_name || data.name || 'Candidate',
+        email: data.email,
+        position: data.position || 'Standard Node',
+        passwordHash: 'SHA256:7B9A2C...F310',
+        plan: 'Professional Node',
+        proctoringSettings: { ...proctoringSettings },
+        // Restore resume if it was previously uploaded
+        ...(savedResume ? { resumeText: savedResume, resumeFileName: savedResumeName || 'resume' } : {})
       } as any);
+
+      if (savedResume) {
+        console.log(`[Auth] Restored resume from localStorage: ${savedResumeName}, size: ${savedResume.length}`);
+      }
+
       setIsAuthenticated(true);
       setView(AppView.AUTHENTICATED);
       setSidebarView('DASHBOARD');
@@ -123,11 +138,12 @@ export default function App() {
     setShowAuthModal(null);
   };
 
-  // Sync candidate proctoring settings when root state changes
+  // Sync proctoring settings — MUST NOT wipe resumeText or other fields
   useEffect(() => {
     if (candidate) {
       setCandidate(prev => prev ? { ...prev, proctoringSettings } : null);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [proctoringSettings]);
 
   const handleInterviewComplete = (finalResults: EvaluationResult[], warnings: WarningEvent[], status: 'COMPLETED' | 'TERMINATED') => {
@@ -277,7 +293,16 @@ export default function App() {
                     {interviewStep === 'PROFILE_SETUP' && candidate && (
                       <ProfileSetup
                         initialData={candidate}
-                        onComplete={(c) => { setCandidate(c); setInterviewStep('CAMERA_CHECK'); }}
+                        onComplete={(c) => {
+                          // Merge: preserve resumeText / resumeFileName from UploadedDocuments
+                          setCandidate(prev => ({
+                            ...prev,
+                            ...c,
+                            resumeText:     c.resumeText     || prev?.resumeText,
+                            resumeFileName: c.resumeFileName || prev?.resumeFileName,
+                          } as Candidate));
+                          setInterviewStep('CAMERA_CHECK');
+                        }}
                         onViewDocs={() => setSidebarView('UPLOADED_DOCS')}
                       />
                     )}

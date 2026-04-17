@@ -2,7 +2,7 @@
 import * as React from 'react';
 const { useState, useRef, useEffect } = React;
 import { Candidate } from '../types';
-import { User, Mail, Phone, CreditCard, Camera, ShieldCheck, ArrowRight, RefreshCw, XCircle, Files } from 'lucide-react';
+import { User, Mail, Phone, CreditCard, Camera, ShieldCheck, ArrowRight, RefreshCw, XCircle, Files, FileText, CheckCircle } from 'lucide-react';
 
 interface ProfileSetupProps {
   initialData: Candidate;
@@ -21,6 +21,8 @@ export const ProfileSetup: React.FC<ProfileSetupProps> = ({ initialData, onCompl
   const [pfpPreview, setPfpPreview] = useState<string | null>(initialData.profilePhoto || null);
   const [idPreview, setIdPreview] = useState<string | null>(initialData.idCardImage || null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [resumeFileName, setResumeFileName] = useState<string>(initialData.resumeFileName || '');
+  const [resumeText, setResumeText]         = useState<string>(initialData.resumeText || '');
 
   // Camera States
   const [isCameraMode, setIsCameraMode] = useState(false);
@@ -135,6 +137,28 @@ export const ProfileSetup: React.FC<ProfileSetupProps> = ({ initialData, onCompl
         console.error("Image processing failed", err);
         alert("Could not process image. Please try a simpler file (JPG/PNG).");
       }
+    }
+  };
+
+  // ── Resume / CV upload ────────────────────────────────────────────────────
+  const handleResumeUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+    const reader = new FileReader();
+
+    reader.onload = (ev) => {
+      const result = ev.target?.result as string || '';
+      setResumeText(result);
+      setResumeFileName(file.name);
+      setFormData(prev => ({ ...prev, resumeText: result, resumeFileName: file.name }));
+    };
+
+    if (isPdf) {
+      reader.readAsDataURL(file);   // → "data:application/pdf;base64,..." — Gemini reads PDFs natively
+    } else {
+      reader.readAsText(file);      // → plain text for .txt files
     }
   };
 
@@ -277,8 +301,46 @@ export const ProfileSetup: React.FC<ProfileSetupProps> = ({ initialData, onCompl
                       />
                     </div>
                   </div>
-                </div>
 
+                  {/* Resume Upload */}
+                  <div className="space-y-2">
+                    <label className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-widest ml-1">
+                      Resume / CV <span className="text-brand-500 font-black">(AI uses this)</span>
+                    </label>
+                    <label className={`flex flex-col items-center justify-center gap-3 h-28 rounded-3xl border-2 border-dashed cursor-pointer transition-all ${
+                      resumeFileName
+                        ? 'border-emerald-400/60 bg-emerald-50/40 dark:bg-emerald-900/10'
+                        : 'border-brand-300/40 dark:border-brand-600/30 hover:bg-brand-50/20 dark:hover:bg-brand-900/5'
+                    }`}>
+                      <input
+                        type="file"
+                        accept=".txt,.pdf,.doc,.docx"
+                        className="hidden"
+                        onChange={handleResumeUpload}
+                      />
+                      {resumeFileName ? (
+                        <>
+                          <CheckCircle size={22} className="text-emerald-500" />
+                          <div className="text-center">
+                            <p className="text-[10px] font-black text-emerald-600 dark:text-emerald-400 uppercase tracking-widest truncate max-w-[180px]">{resumeFileName}</p>
+                            <p className="text-[9px] font-bold text-slate-400 mt-0.5 uppercase">Click to replace</p>
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <FileText size={22} className="text-brand-400" />
+                          <div className="text-center">
+                            <p className="text-[10px] font-black text-brand-600 dark:text-brand-400 uppercase tracking-widest">Upload Resume</p>
+                            <p className="text-[9px] font-bold text-slate-400 mt-0.5 uppercase">.txt · .pdf · .doc</p>
+                          </div>
+                        </>
+                      )}
+                    </label>
+                    {!resumeFileName && (
+                      <p className="text-[9px] text-amber-500 font-bold ml-1">⚡ Without a resume, AI asks generic role-based questions.</p>
+                    )}
+                  </div>
+                </div>
                 {/* Column 2: Documents */}
                 <div className="space-y-6">
                   <div className="flex items-center gap-2 mb-2">

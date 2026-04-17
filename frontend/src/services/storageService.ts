@@ -123,14 +123,26 @@ const DEFAULT_CONFIG: AdminConfig = {
 export const StorageService = {
   // --- Sessions (Database) ---
 
-  getSessionsApi: async (): Promise<InterviewSession[]> => {
+  getSessionsApi: async (candidateId?: number): Promise<InterviewSession[]> => {
     try {
-      const { data, error } = await supabase
-        .from('sessions')
+      let query = supabase
+        .from('interview_sessions')
         .select('*')
         .order('created_at', { ascending: false });
+
+      if (candidateId !== undefined) {
+        query = (query as any).eq('candidate_id', candidateId);
+      }
+
+      const { data, error } = await query;
       if (error) throw error;
-      return data || [];
+      
+      // Map snake_case from DB to camelCase for frontend
+      return (data || []).map((s: any) => ({
+        ...s,
+        overallScore: s.overall_score,
+        candidateId: s.candidate_id
+      }));
     } catch (e) {
       console.error("Failed to fetch sessions from Supabase", e);
       return [];
@@ -139,9 +151,16 @@ export const StorageService = {
 
   saveSession: async (session: any) => {
     try {
+      // Map camelCase from frontend to snake_case for DB
+      const dbSession = {
+        ...session,
+        overall_score: session.overallScore,
+        candidate_id: session.candidateId
+      };
+      
       const { data, error } = await supabase
-        .from('sessions')
-        .insert([session]);
+        .from('interview_sessions')
+        .insert([dbSession]);
       if (error) throw error;
       return data;
     } catch (e) {
@@ -163,7 +182,13 @@ export const StorageService = {
         .eq('role', 'candidate')
         .order('created_at', { ascending: false });
       if (error) throw error;
-      return data || [];
+      
+      // Map snake_case to camelCase
+      return (data || []).map((p: any) => ({
+        ...p,
+        name: p.full_name,
+        isVerified: p.is_verified
+      }));
     } catch (e) {
       console.error("Failed to fetch candidates from Supabase", e);
       return [];
@@ -174,7 +199,13 @@ export const StorageService = {
     try {
       const { data, error } = await supabase
         .from('profiles')
-        .insert([{ ...candidateData, role: 'candidate' }]);
+        .insert([{ 
+          full_name: candidateData.name,
+          email: candidateData.email,
+          phone: candidateData.phone,
+          role: 'candidate',
+          is_verified: candidateData.isVerified || false
+        }]);
       if (error) throw error;
       return data;
     } catch (e) {
@@ -187,8 +218,11 @@ export const StorageService = {
     try {
       if (candidates.length === 0) return [];
       const formatted = candidates.map(c => ({
-        ...c,
-        role: 'candidate'
+        full_name: c.name,
+        email: c.email,
+        phone: c.phone,
+        role: 'candidate',
+        is_verified: c.isVerified || false
       }));
       const { data, error } = await supabase
         .from('profiles')
